@@ -12,6 +12,7 @@ import type { ChatMessage } from '../types/chat';
 import { ResultTable } from './ResultTable';
 import { MarkdownMessage } from './MarkdownMessage';
 import { SuggestedPromptsList } from './chat/SuggestedPromptsList';
+import { ChatResponseChart } from "./ChatResponseChart";
 
 interface ChatMessageBubbleProps {
   message: ChatMessage;
@@ -152,6 +153,10 @@ export function ChatMessageBubble({
             )}
           </div>
         )}
+
+{!message.error && !isUser && message.chart && (
+  <ChatResponseChart chart={message.chart} />
+)}
 
         {!message.error && hasTable && message.response?.table && (
           <ResultTable

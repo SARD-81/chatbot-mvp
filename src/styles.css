@@ -659,6 +659,11 @@ button {
   width: 100%;
 }
 
+.assistant-message .chat-response-chart {
+  width: 100%;
+  margin-top: 16px;
+}
+
 .assistant-message .message-bubble:has(.message-error) {
   border-color: rgba(249, 112, 102, 0.24);
   background: linear-gradient(

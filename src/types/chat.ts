@@ -58,5 +58,6 @@ export interface ChatMessage {
   createdAt: Date;
   response?: ChatResponse;
   error?: string;
+  chart?: SuggestedChart;
   suggestedPrompts?: SuggestedPrompt[];
 }

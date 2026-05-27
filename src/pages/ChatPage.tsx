@@ -13,11 +13,15 @@ import { sendChatMessage } from "../lib/api";
 import type { ChatMessage } from "../types/chat";
 import { logout } from "../utils/storage";
 import { APP_NAME } from "../config/app";
+import {
+  AVERAGE_SCORE_BY_DATE_PROMPT,
+  buildChartForPromptResponse,
+} from "../utils/chatCharts";
 
 const suggestedPrompts = [
-  "نمرات دوره فعلی رو به تفکیک تاریخ برام میانگین بگیر.",
+  AVERAGE_SCORE_BY_DATE_PROMPT,
   "خلاصه‌ای از داده‌های بارگذاری‌شده بده",
-  " 10 رکورد اول جدول را نمایش دهید",
+  "10 رکورد اول جدول را نمایش دهید",
   "مقداری از داده‌های بارگذاری‌شده بده",
 ];
 
@@ -60,14 +64,16 @@ export function ChatPage() {
 
     try {
       const response = await sendChatMessage(userText);
+const responseChart = buildChartForPromptResponse(userText, response);
 
-      const assistantMessage: ChatMessage = {
-        id: uuidv4(),
-        role: "assistant",
-        content: response.answer || "پاسخی دریافت نشد.",
-        createdAt: new Date(),
-        response,
-      };
+const assistantMessage: ChatMessage = {
+  id: uuidv4(),
+  role: "assistant",
+  content: response.answer || "پاسخی دریافت نشد.",
+  createdAt: new Date(),
+  response,
+  chart: responseChart,
+};
 
       setMessages((previousMessages) => [
         ...previousMessages,
