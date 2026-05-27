@@ -15,12 +15,13 @@ import { logout } from "../utils/storage";
 import { APP_NAME } from "../config/app";
 import {
   AVERAGE_SCORE_BY_DATE_PROMPT,
+  TOP_GROWTH_BY_RANK_PROMPT,
   buildChartForPromptResponse,
 } from "../utils/chatCharts";
 
 const suggestedPrompts = [
   AVERAGE_SCORE_BY_DATE_PROMPT,
-  "خلاصه‌ای از داده‌های بارگذاری‌شده بده",
+  TOP_GROWTH_BY_RANK_PROMPT,
   "10 رکورد اول جدول را نمایش دهید",
   "مقداری از داده‌های بارگذاری‌شده بده",
 ];
@@ -64,16 +65,16 @@ export function ChatPage() {
 
     try {
       const response = await sendChatMessage(userText);
-const responseChart = buildChartForPromptResponse(userText, response);
+      const responseChart = buildChartForPromptResponse(userText, response);
 
-const assistantMessage: ChatMessage = {
-  id: uuidv4(),
-  role: "assistant",
-  content: response.answer || "پاسخی دریافت نشد.",
-  createdAt: new Date(),
-  response,
-  chart: responseChart,
-};
+      const assistantMessage: ChatMessage = {
+        id: uuidv4(),
+        role: "assistant",
+        content: response.answer || "پاسخی دریافت نشد.",
+        createdAt: new Date(),
+        response,
+        chart: responseChart,
+      };
 
       setMessages((previousMessages) => [
         ...previousMessages,
@@ -116,7 +117,7 @@ const assistantMessage: ChatMessage = {
     }
 
     const assistantMessageIndex = messages.findIndex(
-      (message) => message.id === assistantMessageId,
+      (message) => message.id === assistantMessageId
     );
 
     if (assistantMessageIndex <= 0) {
@@ -138,8 +139,8 @@ const assistantMessage: ChatMessage = {
       previousMessages.filter(
         (message) =>
           message.id !== assistantMessageId &&
-          message.id !== previousUserMessage.id,
-      ),
+          message.id !== previousUserMessage.id
+      )
     );
 
     await submitMessage(questionToRegenerate);

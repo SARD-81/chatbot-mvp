@@ -6,8 +6,14 @@ import type { SuggestedChart } from "../types/chat";
 export const AVERAGE_SCORE_BY_DATE_PROMPT =
   "نمرات دوره فعلی رو به تفکیک تاریخ برام میانگین بگیر.";
 
+export const TOP_GROWTH_BY_RANK_PROMPT =
+  "میانگین نمره نهایی دوره قبل و فعلی رو به تفکیک رده مقایسه کن و ۱۰ رده‌ای که بیشترین میانگین رشد رو داشتن برام لیست کن.";
+
 const DATE_COLUMN = "تاریخ_دوره";
 const AVERAGE_SCORE_COLUMN = "میانگین_نمره_دوره_فعلی";
+
+const RANK_COLUMN = "رده";
+const AVERAGE_GROWTH_COLUMN = "میانگین_رشد";
 
 function normalizePrompt(value: string) {
   return value
@@ -35,6 +41,10 @@ function toFiniteNumber(value: unknown) {
   const numericValue = Number(value);
 
   return Number.isFinite(numericValue) ? numericValue : null;
+}
+
+function normalizeChartLabel(value: unknown) {
+  return String(value).trim().replace(/\s+/g, " ");
 }
 
 function buildAverageScoreByDateChart(
@@ -90,12 +100,69 @@ function buildAverageScoreByDateChart(
   };
 }
 
+function buildTopGrowthByRankChart(
+  response: ChatResponse,
+): SuggestedChart | undefined {
+  const table = response.table;
+
+  if (!table) {
+    return undefined;
+  }
+
+  const hasRequiredColumns =
+    table.columns.includes(RANK_COLUMN) &&
+    table.columns.includes(AVERAGE_GROWTH_COLUMN);
+
+  if (!hasRequiredColumns) {
+    return undefined;
+  }
+
+  const data = table.rows.reduce<ChartPoint[]>((points, row) => {
+    const rank = row[RANK_COLUMN];
+    const growth = toFiniteNumber(row[AVERAGE_GROWTH_COLUMN]);
+
+    if (
+      rank === null ||
+      rank === undefined ||
+      rank === "" ||
+      growth === null
+    ) {
+      return points;
+    }
+
+    points.push({
+      label: normalizeChartLabel(rank),
+      value: Number(growth.toFixed(2)),
+    });
+
+    return points;
+  }, []);
+
+  if (!data.length) {
+    return undefined;
+  }
+
+  return {
+    type: "bar",
+    title: "۱۰ رده با بیشترین میانگین رشد",
+    description: "مقایسه میانگین رشد نمره نهایی دوره فعلی نسبت به دوره قبل",
+    data,
+    seriesName: "میانگین رشد",
+    unit: "امتیاز",
+    height: 420,
+  };
+}
+
 export function buildChartForPromptResponse(
   prompt: string,
   response: ChatResponse,
 ) {
   if (isSamePrompt(prompt, AVERAGE_SCORE_BY_DATE_PROMPT)) {
     return buildAverageScoreByDateChart(response);
+  }
+
+  if (isSamePrompt(prompt, TOP_GROWTH_BY_RANK_PROMPT)) {
+    return buildTopGrowthByRankChart(response);
   }
 
   return undefined;
