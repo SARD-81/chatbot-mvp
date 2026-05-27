@@ -11,6 +11,64 @@ type EnterpriseBarChartProps = EnterpriseChartProps & {
   unit?: string;
 };
 
+function normalizeCategoryLabel(value: string) {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function splitLabelIntoLines(label: string, maxLineLength = 14, maxLines = 3) {
+  const normalizedLabel = normalizeCategoryLabel(label);
+
+  if (normalizedLabel.length <= maxLineLength) {
+    return normalizedLabel;
+  }
+
+  const words = normalizedLabel.split(" ");
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const nextLine = currentLine ? `${currentLine} ${word}` : word;
+
+    if (nextLine.length <= maxLineLength) {
+      currentLine = nextLine;
+      continue;
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    currentLine = word;
+
+    if (lines.length === maxLines - 1) {
+      break;
+    }
+  }
+
+  if (currentLine && lines.length < maxLines) {
+    lines.push(currentLine);
+  }
+
+  const usedText = lines.join(" ");
+  const hasHiddenText = normalizedLabel.length > usedText.length;
+
+  if (hasHiddenText && lines.length) {
+    const lastLineIndex = lines.length - 1;
+    const lastLine = lines[lastLineIndex];
+
+    lines[lastLineIndex] =
+      lastLine.length >= maxLineLength
+        ? `${lastLine.slice(0, maxLineLength - 1)}…`
+        : `${lastLine}…`;
+  }
+
+  return lines.join("\n");
+}
+
+function formatCategoryAxisLabel(value: string) {
+  return splitLabelIntoLines(value);
+}
+
 export function EnterpriseBarChart({
   data,
   title = "مقایسه مقادیر",
@@ -22,6 +80,9 @@ export function EnterpriseBarChart({
   className,
 }: EnterpriseBarChartProps) {
   const palette = useEnterpriseChartPalette();
+
+  const hasLongLabels = data.some((item) => normalizeCategoryLabel(item.label).length > 14);
+  const bottomGridSize = hasLongLabels ? 92 : 30;
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -50,7 +111,7 @@ export function EnterpriseBarChart({
       grid: {
         top: 26,
         right: 14,
-        bottom: 30,
+        bottom: bottomGridSize,
         left: 20,
         containLabel: true,
       },
@@ -63,8 +124,10 @@ export function EnterpriseBarChart({
           color: palette.mutedForeground,
           fontSize: 11,
           interval: 0,
-          hideOverlap: true,
-          margin: 14,
+          hideOverlap: false,
+          margin: 16,
+          lineHeight: 16,
+          formatter: formatCategoryAxisLabel,
         },
       },
       yAxis: {
@@ -110,7 +173,7 @@ export function EnterpriseBarChart({
         },
       ],
     }),
-    [data, palette, seriesName, unit]
+    [bottomGridSize, data, palette, seriesName, unit]
   );
 
   return (

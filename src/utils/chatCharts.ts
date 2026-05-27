@@ -146,10 +146,10 @@ function buildTopGrowthByRankChart(
     type: "bar",
     title: "۱۰ رده با بیشترین میانگین رشد",
     description: "مقایسه میانگین رشد نمره نهایی دوره فعلی نسبت به دوره قبل",
-    data,
+    data: [...data].reverse(),
     seriesName: "میانگین رشد",
     unit: "امتیاز",
-    height: 420,
+    height: 460,
   };
 }
 
