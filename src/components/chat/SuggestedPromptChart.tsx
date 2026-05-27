@@ -3,6 +3,7 @@ import {
   EnterpriseGaugeChart,
   EnterpriseLineChart,
   EnterprisePieChart,
+  EnterpriseScatterChart,
 } from "@/components/charts";
 import type { SuggestedChart } from "@/types/chat";
 
@@ -58,6 +59,19 @@ export function SuggestedPromptChart({ chart }: SuggestedPromptChartProps) {
           unit={chart.unit}
           label={chart.label}
           height={chart.height ?? 300}
+        />
+      );
+
+    case "scatter":
+      return (
+        <EnterpriseScatterChart
+          title={chart.title}
+          description={chart.description}
+          data={chart.data}
+          xAxisName={chart.xAxisName}
+          yAxisName={chart.yAxisName}
+          unit={chart.unit}
+          height={chart.height ?? 520}
         />
       );
 

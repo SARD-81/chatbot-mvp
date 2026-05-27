@@ -16,13 +16,14 @@ import { APP_NAME } from "../config/app";
 import {
   AVERAGE_SCORE_BY_DATE_PROMPT,
   TOP_GROWTH_BY_RANK_PROMPT,
+  RANK_SCORE_COMPARISON_SCATTER_PROMPT,
   buildChartForPromptResponse,
 } from "../utils/chatCharts";
 
 const suggestedPrompts = [
   AVERAGE_SCORE_BY_DATE_PROMPT,
   TOP_GROWTH_BY_RANK_PROMPT,
-  "10 رکورد اول جدول را نمایش دهید",
+  RANK_SCORE_COMPARISON_SCATTER_PROMPT,
   "مقداری از داده‌های بارگذاری‌شده بده",
 ];
 

@@ -10,6 +10,14 @@ export type PieChartPoint = {
   value: number;
 };
 
+export type ScatterChartPoint = {
+  rank: string;
+  previousScore: number;
+  currentScore: number;
+  supervisionScore: number;
+  growth: number;
+};
+
 export type EnterpriseChartProps = {
   title?: string;
   description?: string;

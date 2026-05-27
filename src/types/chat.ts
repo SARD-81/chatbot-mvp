@@ -1,9 +1,13 @@
 import type { ChatResponse } from './api';
-import type { ChartPoint, PieChartPoint } from '../components/charts/types';
+import type {
+  ChartPoint,
+  PieChartPoint,
+  ScatterChartPoint,
+} from '../components/charts/types';
 
 export type ChatMessageRole = 'user' | 'assistant';
 
-export type SuggestedChartType = 'line' | 'bar' | 'pie' | 'gauge';
+export type SuggestedChartType = 'line' | 'bar' | 'pie' | 'gauge' | 'scatter';
 
 export type SuggestedChart =
   | {
@@ -41,6 +45,16 @@ export type SuggestedChart =
       max?: number;
       unit?: string;
       label?: string;
+      height?: number;
+    }
+  | {
+      type: 'scatter';
+      title?: string;
+      description?: string;
+      data: ScatterChartPoint[];
+      xAxisName?: string;
+      yAxisName?: string;
+      unit?: string;
       height?: number;
     };
 

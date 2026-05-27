@@ -6,4 +6,5 @@ export * from "./EnterpriseLineChart";
 export * from "./EnterpriseBarChart";
 export * from "./EnterprisePieChart";
 export * from "./EnterpriseGaugeChart";
+export * from "./EnterpriseScatterChart";
 export * from "./ChartsPreview";
