@@ -1,4 +1,8 @@
-import type { ChartPoint, ScatterChartPoint } from "../components/charts";
+import type {
+    ChartPoint,
+    PieChartPoint,
+    ScatterChartPoint,
+  } from "../components/charts";
 import { formatJalaliPeriod } from "../components/charts";
 import type { ChatResponse } from "../types/api";
 import type { SuggestedChart } from "../types/chat";
@@ -12,6 +16,9 @@ export const TOP_GROWTH_BY_RANK_PROMPT =
 export const RANK_SCORE_COMPARISON_SCATTER_PROMPT =
   "مقایسه نمره نهایی دوره قبل و فعلی به تفکیک رده رو بهم بده؛ می‌خوام میانگین رشد هر رده و میانگین نمره نظارتشون رو هم کنارش ببینم.";
 
+  export const PERFORMANCE_STATUS_DISTRIBUTION_PROMPT =
+  "بر اساس وضعیت عملکرد، توزیع رده‌های ما چطوریه؟ تعداد و درصدِ سهم هر وضعیت از کل رو بهم نشون بده.";
+
 const DATE_COLUMN = "تاریخ_دوره";
 const AVERAGE_SCORE_COLUMN = "میانگین_نمره_دوره_فعلی";
 
@@ -22,6 +29,10 @@ const PREVIOUS_SCORE_COLUMN = "میانگین_نمره_قبل";
 const CURRENT_SCORE_COLUMN = "میانگین_نمره_فعلی";
 const SUPERVISION_SCORE_COLUMN = "میانگین_نظارت";
 const MEDIAN_GROWTH_COLUMN = "رشد_میانی";
+
+const PERFORMANCE_STATUS_COLUMN = "وضعیت_عملکرد";
+const COUNT_COLUMN = "تعداد";
+const PERCENT_OF_TOTAL_COLUMN = "درصد_از_کل";
 
 function normalizePrompt(value: string) {
   return value
@@ -54,6 +65,37 @@ function toFiniteNumber(value: unknown) {
 function normalizeChartLabel(value: unknown) {
   return String(value).trim().replace(/\s+/g, " ");
 }
+
+function getPerformanceStatusColor(status: string) {
+    const normalizedStatus = normalizeChartLabel(status);
+  
+    if (
+      normalizedStatus.includes("سبز") ||
+      normalizedStatus.includes("مطلوب")
+    ) {
+      return "#16a34a";
+    }
+  
+    if (
+      normalizedStatus.includes("زرد") ||
+      normalizedStatus.includes("نیاز به بهبود")
+    ) {
+      return "#f59e0b";
+    }
+  
+    if (
+      normalizedStatus.includes("قرمز") ||
+      normalizedStatus.includes("بحرانی")
+    ) {
+      return "#dc2626";
+    }
+  
+    if (normalizedStatus.includes("نامشخص")) {
+      return "#94a3b8";
+    }
+  
+    return "#64748b";
+  }
 
 function buildAverageScoreByDateChart(
   response: ChatResponse,
@@ -228,6 +270,67 @@ function buildRankScoreComparisonScatterChart(
   };
 }
 
+function buildPerformanceStatusDistributionPieChart(
+    response: ChatResponse,
+  ): SuggestedChart | undefined {
+    const table = response.table;
+  
+    if (!table) {
+      return undefined;
+    }
+  
+    const hasRequiredColumns =
+      table.columns.includes(PERFORMANCE_STATUS_COLUMN) &&
+      table.columns.includes(COUNT_COLUMN) &&
+      table.columns.includes(PERCENT_OF_TOTAL_COLUMN);
+  
+    if (!hasRequiredColumns) {
+      return undefined;
+    }
+  
+    const data = table.rows.reduce<PieChartPoint[]>((items, row) => {
+      const rawStatus = row[PERFORMANCE_STATUS_COLUMN];
+      const count = toFiniteNumber(row[COUNT_COLUMN]);
+      const percent = toFiniteNumber(row[PERCENT_OF_TOTAL_COLUMN]);
+  
+      if (
+        rawStatus === null ||
+        rawStatus === undefined ||
+        rawStatus === "" ||
+        count === null ||
+        percent === null
+      ) {
+        return items;
+      }
+  
+      const status = normalizeChartLabel(rawStatus);
+  
+      items.push({
+        name: status,
+        value: Number(count.toFixed(0)),
+        percent: Number(percent.toFixed(2)),
+        itemStyle: {
+          color: getPerformanceStatusColor(status),
+        },
+      });
+  
+      return items;
+    }, []);
+  
+    if (!data.length) {
+      return undefined;
+    }
+  
+    return {
+      type: "pie",
+      title: "توزیع وضعیت عملکرد",
+      description: "نمایش تعداد و درصد سهم هر وضعیت عملکرد از کل",
+      data,
+      unit: "مورد",
+      height: 420,
+    };
+  }
+
 export function buildChartForPromptResponse(
   prompt: string,
   response: ChatResponse,
@@ -242,6 +345,10 @@ export function buildChartForPromptResponse(
 
   if (isSamePrompt(prompt, RANK_SCORE_COMPARISON_SCATTER_PROMPT)) {
     return buildRankScoreComparisonScatterChart(response);
+  }
+
+  if (isSamePrompt(prompt, PERFORMANCE_STATUS_DISTRIBUTION_PROMPT)) {
+    return buildPerformanceStatusDistributionPieChart(response);
   }
 
   return undefined;

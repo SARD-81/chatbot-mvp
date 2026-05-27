@@ -8,6 +8,10 @@ export type ChartPoint = {
 export type PieChartPoint = {
   name: string;
   value: number;
+  percent?: number;
+  itemStyle?: {
+    color?: string;
+  };
 };
 
 export type ScatterChartPoint = {

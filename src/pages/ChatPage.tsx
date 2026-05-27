@@ -17,6 +17,7 @@ import {
   AVERAGE_SCORE_BY_DATE_PROMPT,
   TOP_GROWTH_BY_RANK_PROMPT,
   RANK_SCORE_COMPARISON_SCATTER_PROMPT,
+  PERFORMANCE_STATUS_DISTRIBUTION_PROMPT,
   buildChartForPromptResponse,
 } from "../utils/chatCharts";
 
@@ -24,7 +25,7 @@ const suggestedPrompts = [
   AVERAGE_SCORE_BY_DATE_PROMPT,
   TOP_GROWTH_BY_RANK_PROMPT,
   RANK_SCORE_COMPARISON_SCATTER_PROMPT,
-  "مقداری از داده‌های بارگذاری‌شده بده",
+  PERFORMANCE_STATUS_DISTRIBUTION_PROMPT,
 ];
 
 export function ChatPage() {

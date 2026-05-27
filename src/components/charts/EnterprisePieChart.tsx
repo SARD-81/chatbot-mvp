@@ -1,5 +1,8 @@
 import { useMemo } from "react";
-import type { EChartsOption, TooltipComponentFormatterCallbackParams } from "echarts";
+import type {
+  EChartsOption,
+  TooltipComponentFormatterCallbackParams,
+} from "echarts";
 import { BaseChart } from "./BaseChart";
 import { useEnterpriseChartPalette, enterpriseTooltipCss } from "./chartTheme";
 import { formatNumber } from "./chartFormatters";
@@ -10,8 +13,37 @@ type EnterprisePieChartProps = EnterpriseChartProps & {
   unit?: string;
 };
 
+type PieFormatterParam = {
+  data?: unknown;
+  name?: unknown;
+  value?: unknown;
+  percent?: unknown;
+};
+
 function getPieTooltipParam(params: TooltipComponentFormatterCallbackParams) {
   return Array.isArray(params) ? params[0] : params;
+}
+
+function getPiePercent(params: PieFormatterParam) {
+  const dataItem = params.data as PieChartPoint | undefined;
+
+  if (typeof dataItem?.percent === "number") {
+    return dataItem.percent;
+  }
+
+  const percent = Number(params.percent ?? 0);
+
+  return Number.isFinite(percent) ? percent : 0;
+}
+
+function getPieName(params: PieFormatterParam) {
+  return String(params.name ?? "-");
+}
+
+function getPieValue(params: PieFormatterParam) {
+  const value = Number(params.value ?? 0);
+
+  return Number.isFinite(value) ? value : 0;
 }
 
 export function EnterprisePieChart({
@@ -49,15 +81,18 @@ export function EnterprisePieChart({
           fontSize: 12,
         },
         formatter: (params) => {
-          const item = getPieTooltipParam(params);
-          const value = formatNumber(Number(item.value ?? 0));
-          return `<div style="min-width:140px">
-            <div style="font-weight:700;margin-bottom:6px">${item.name ?? "-"}</div>
+          const item = getPieTooltipParam(params) as PieFormatterParam;
+          const name = getPieName(item);
+          const value = formatNumber(getPieValue(item), 0);
+          const percent = formatNumber(getPiePercent(item), 2);
+
+          return `<div style="min-width:170px;direction:rtl;text-align:right">
+            <div style="font-weight:700;margin-bottom:6px;line-height:1.8">${name}</div>
             <div style="display:flex;justify-content:space-between;gap:16px">
-              <span>مقدار</span><strong>${value}${unit ? ` ${unit}` : ""}</strong>
+              <span>تعداد</span><strong>${value}${unit ? ` ${unit}` : ""}</strong>
             </div>
             <div style="display:flex;justify-content:space-between;gap:16px;margin-top:4px">
-              <span>سهم</span><strong>${formatNumber(Number(item.percent ?? 0), 1)}٪</strong>
+              <span>درصد از کل</span><strong>${percent}٪</strong>
             </div>
           </div>`;
         },
@@ -90,7 +125,13 @@ export function EnterprisePieChart({
             show: true,
             color: palette.foreground,
             fontSize: 11,
-            formatter: "{b}\n{d}٪",
+            formatter: (params) => {
+              const item = params as PieFormatterParam;
+              const name = getPieName(item);
+              const percent = formatNumber(getPiePercent(item), 2);
+
+              return `${name}\n${percent}٪`;
+            },
           },
           labelLine: {
             length: 12,
