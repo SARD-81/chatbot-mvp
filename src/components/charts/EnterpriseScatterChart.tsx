@@ -68,6 +68,43 @@ function formatTooltip(params: TooltipComponentFormatterCallbackParams) {
   </div>`;
 }
 
+const MIN_SCATTER_SYMBOL_SIZE = 10;
+const MAX_SCATTER_SYMBOL_SIZE = 34;
+
+function getGrowthFromSeriesValue(value: unknown) {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const growth = Number(value[3]);
+
+  return Number.isFinite(growth) ? growth : null;
+}
+
+function createScatterSymbolSizeFormatter(
+  minGrowth: number,
+  maxGrowth: number,
+) {
+  return (value: unknown) => {
+    const growth = getGrowthFromSeriesValue(value);
+
+    if (growth === null) {
+      return MIN_SCATTER_SYMBOL_SIZE;
+    }
+
+    if (maxGrowth === minGrowth) {
+      return (MIN_SCATTER_SYMBOL_SIZE + MAX_SCATTER_SYMBOL_SIZE) / 2;
+    }
+
+    const normalizedGrowth = (growth - minGrowth) / (maxGrowth - minGrowth);
+
+    return (
+      MIN_SCATTER_SYMBOL_SIZE +
+      normalizedGrowth * (MAX_SCATTER_SYMBOL_SIZE - MIN_SCATTER_SYMBOL_SIZE)
+    );
+  };
+}
+
 export function EnterpriseScatterChart({
   data,
   title = "مقایسه نمره قبل و فعلی",
@@ -90,6 +127,33 @@ export function EnterpriseScatterChart({
         item.rank,
       ]),
     [data],
+  );
+
+    const growthRange = useMemo(() => {
+    const growthValues = seriesData
+      .map((item) => item[3])
+      .filter((growth) => Number.isFinite(growth));
+
+    if (!growthValues.length) {
+      return {
+        minGrowth: 0,
+        maxGrowth: 0,
+      };
+    }
+
+    return {
+      minGrowth: Math.min(...growthValues),
+      maxGrowth: Math.max(...growthValues),
+    };
+  }, [seriesData]);
+
+  const scatterSymbolSize = useMemo(
+    () =>
+      createScatterSymbolSizeFormatter(
+        growthRange.minGrowth,
+        growthRange.maxGrowth,
+      ),
+    [growthRange],
   );
 
   const option: EChartsOption = useMemo(
@@ -161,7 +225,7 @@ export function EnterpriseScatterChart({
           name: "رده",
           type: "scatter",
           data: seriesData,
-          symbolSize: 13,
+          symbolSize: scatterSymbolSize,
           emphasis: {
             focus: "self",
             scale: 1.45,
@@ -179,8 +243,9 @@ export function EnterpriseScatterChart({
         },
       ],
     }),
-    [
+        [
       palette,
+      scatterSymbolSize,
       seriesData,
       xAxisName,
       yAxisName,

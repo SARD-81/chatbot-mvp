@@ -13,8 +13,8 @@ export const AVERAGE_SCORE_BY_DATE_PROMPT =
 export const TOP_GROWTH_BY_RANK_PROMPT =
   "میانگین نمره نهایی دوره قبل و فعلی رو به تفکیک رده مقایسه کن و ۱۰ رده‌ای که بیشترین میانگین رشد رو داشتن برام لیست کن.";
 
-export const RANK_SCORE_COMPARISON_SCATTER_PROMPT =
-  "مقایسه نمره نهایی دوره قبل و فعلی به تفکیک رده رو بهم بده؛ می‌خوام میانگین رشد هر رده و میانگین نمره نظارتشون رو هم کنارش ببینم.";
+  export const RANK_SCORE_COMPARISON_SCATTER_PROMPT =
+  "میانگین نمره نهایی دوره قبل و فعلی رو به تفکیک رده مقایسه کن. میانگین رشد هر رده و میانگین نمره نظارتشون رو هم حساب کن و در نهایت فقط ۱۰ رده‌ای که بیشترین میانگین رشد رو داشتن برام لیست کن.";
 
   export const PERFORMANCE_STATUS_DISTRIBUTION_PROMPT =
   "بر اساس وضعیت عملکرد، توزیع رده‌های ما چطوریه؟ تعداد و درصدِ سهم هر وضعیت از کل رو بهم نشون بده.";
@@ -253,16 +253,20 @@ function buildRankScoreComparisonScatterChart(
     return points;
   }, []);
 
-  if (!data.length) {
+    if (!data.length) {
     return undefined;
   }
 
+  const topGrowthData = [...data]
+    .sort((firstItem, secondItem) => secondItem.growth - firstItem.growth)
+    .slice(0, 10);
+
   return {
     type: "scatter",
-    title: "مقایسه نمره قبل و فعلی به تفکیک رده",
+    title: "مقایسه نمره قبل و فعلی برای ۱۰ رده با بیشترین رشد",
     description:
-      "محور افقی میانگین نمره قبل و محور عمودی میانگین نمره فعلی است؛ جزئیات هر رده با حرکت روی نقطه نمایش داده می‌شود.",
-    data,
+      "محور افقی میانگین نمره قبل و محور عمودی میانگین نمره فعلی است؛ اندازه هر نقطه بر اساس رشد میانی همان رده تعیین می‌شود.",
+    data: topGrowthData,
     xAxisName: "میانگین نمره قبل",
     yAxisName: "میانگین نمره فعلی",
     unit: "امتیاز",
