@@ -68,8 +68,8 @@ function formatTooltip(params: TooltipComponentFormatterCallbackParams) {
   </div>`;
 }
 
-const MIN_SCATTER_SYMBOL_SIZE = 10;
-const MAX_SCATTER_SYMBOL_SIZE = 34;
+const MIN_SCATTER_SYMBOL_SIZE = 7;
+const MAX_SCATTER_SYMBOL_SIZE = 54;
 
 function getGrowthFromSeriesValue(value: unknown) {
   if (!Array.isArray(value)) {
@@ -96,11 +96,17 @@ function createScatterSymbolSizeFormatter(
       return (MIN_SCATTER_SYMBOL_SIZE + MAX_SCATTER_SYMBOL_SIZE) / 2;
     }
 
-    const normalizedGrowth = (growth - minGrowth) / (maxGrowth - minGrowth);
+    const normalizedGrowth = Math.max(
+      0,
+      Math.min(1, (growth - minGrowth) / (maxGrowth - minGrowth)),
+    );
 
-    return (
+    const visuallyBoostedGrowth = Math.sqrt(normalizedGrowth);
+
+    return Math.round(
       MIN_SCATTER_SYMBOL_SIZE +
-      normalizedGrowth * (MAX_SCATTER_SYMBOL_SIZE - MIN_SCATTER_SYMBOL_SIZE)
+        visuallyBoostedGrowth *
+          (MAX_SCATTER_SYMBOL_SIZE - MIN_SCATTER_SYMBOL_SIZE),
     );
   };
 }
