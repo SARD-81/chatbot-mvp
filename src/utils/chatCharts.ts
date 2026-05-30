@@ -13,7 +13,7 @@ export const AVERAGE_SCORE_BY_DATE_PROMPT =
 export const TOP_GROWTH_BY_RANK_PROMPT =
   "میانگین نمره نهایی دوره قبل و فعلی رو به تفکیک رده مقایسه کن و ۱۰ رده‌ای که بیشترین میانگین رشد رو داشتن برام لیست کن.";
 
-  export const RANK_SCORE_COMPARISON_SCATTER_PROMPT =
+export const RANK_SCORE_COMPARISON_SCATTER_PROMPT =
   "میانگین نمره نهایی دوره قبل و فعلی رو به تفکیک رده مقایسه کن. میانگین رشد هر رده و میانگین نمره نظارتشون رو هم حساب کن و در نهایت فقط ۱۰ رده‌ای که بیشترین میانگین رشد رو داشتن برام لیست کن.";
 
   export const PERFORMANCE_STATUS_DISTRIBUTION_PROMPT =
@@ -65,6 +65,34 @@ function toFiniteNumber(value: unknown) {
 function normalizeChartLabel(value: unknown) {
   return String(value).trim().replace(/\s+/g, " ");
 }
+
+function findExistingColumn(
+  columns: string[],
+  candidates: string[],
+): string | undefined {
+  return candidates.find((candidate) => columns.includes(candidate));
+}
+
+const PREVIOUS_SCORE_COLUMN_CANDIDATES = [
+  "میانگین_نمره_قبل",
+  "میانگین_نمره_دوره_قبل",
+  "میانگین_نمره_دوره_قبلی",
+];
+
+const CURRENT_SCORE_COLUMN_CANDIDATES = [
+  "میانگین_نمره_فعلی",
+  "میانگین_نمره_دوره_فعلی",
+];
+
+const SUPERVISION_SCORE_COLUMN_CANDIDATES = [
+  "میانگین_نظارت",
+  "میانگین_نمره_نظارت",
+];
+
+const GROWTH_COLUMN_CANDIDATES = [
+  "رشد_میانی",
+  "میانگین_رشد",
+];
 
 function getPerformanceStatusColor(status: string) {
     const normalizedStatus = normalizeChartLabel(status);
@@ -212,12 +240,29 @@ function buildRankScoreComparisonScatterChart(
     return undefined;
   }
 
+  const previousScoreColumn = findExistingColumn(
+    table.columns,
+    PREVIOUS_SCORE_COLUMN_CANDIDATES,
+  );
+  const currentScoreColumn = findExistingColumn(
+    table.columns,
+    CURRENT_SCORE_COLUMN_CANDIDATES,
+  );
+  const supervisionScoreColumn = findExistingColumn(
+    table.columns,
+    SUPERVISION_SCORE_COLUMN_CANDIDATES,
+  );
+  const growthColumn = findExistingColumn(
+    table.columns,
+    GROWTH_COLUMN_CANDIDATES,
+  );
+
   const hasRequiredColumns =
     table.columns.includes(RANK_COLUMN) &&
-    table.columns.includes(PREVIOUS_SCORE_COLUMN) &&
-    table.columns.includes(CURRENT_SCORE_COLUMN) &&
-    table.columns.includes(SUPERVISION_SCORE_COLUMN) &&
-    table.columns.includes(MEDIAN_GROWTH_COLUMN);
+    previousScoreColumn &&
+    currentScoreColumn &&
+    supervisionScoreColumn &&
+    growthColumn;
 
   if (!hasRequiredColumns) {
     return undefined;
@@ -225,10 +270,10 @@ function buildRankScoreComparisonScatterChart(
 
   const data = table.rows.reduce<ScatterChartPoint[]>((points, row) => {
     const rank = row[RANK_COLUMN];
-    const previousScore = toFiniteNumber(row[PREVIOUS_SCORE_COLUMN]);
-    const currentScore = toFiniteNumber(row[CURRENT_SCORE_COLUMN]);
-    const supervisionScore = toFiniteNumber(row[SUPERVISION_SCORE_COLUMN]);
-    const growth = toFiniteNumber(row[MEDIAN_GROWTH_COLUMN]);
+    const previousScore = toFiniteNumber(row[previousScoreColumn]);
+    const currentScore = toFiniteNumber(row[currentScoreColumn]);
+    const supervisionScore = toFiniteNumber(row[supervisionScoreColumn]);
+    const growth = toFiniteNumber(row[growthColumn]);
 
     if (
       rank === null ||
@@ -253,7 +298,7 @@ function buildRankScoreComparisonScatterChart(
     return points;
   }, []);
 
-    if (!data.length) {
+  if (!data.length) {
     return undefined;
   }
 

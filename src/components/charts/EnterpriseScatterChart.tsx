@@ -129,7 +129,7 @@ export function EnterpriseScatterChart({
     [data],
   );
 
-    const growthRange = useMemo(() => {
+  const growthRange = useMemo(() => {
     const growthValues = seriesData
       .map((item) => item[3])
       .filter((growth) => Number.isFinite(growth));
@@ -155,7 +155,6 @@ export function EnterpriseScatterChart({
       ),
     [growthRange],
   );
-
   const option: EChartsOption = useMemo(
     () => ({
       color: [palette.primary],
