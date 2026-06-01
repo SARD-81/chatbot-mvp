@@ -166,6 +166,7 @@ button {
 }
 
 .system-selection-card-visual {
+  position: relative;
   min-height: 240px;
   display: grid;
   place-items: center;
@@ -191,11 +192,24 @@ button {
 }
 
 .system-selection-card-visual img {
+  position: relative;
+  z-index: 1;
   width: min(320px, 92%);
   height: min(220px, 100%);
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 22px 32px rgba(45, 63, 92, 0.22));
+}
+
+.system-selection-card-fallback {
+  position: absolute;
+  inset: auto 24px 24px;
+  z-index: 0;
+  color: rgba(45, 56, 76, 0.42);
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 950;
+  text-align: center;
+  pointer-events: none;
 }
 
 .system-selection-card-content {

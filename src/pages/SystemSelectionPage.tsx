@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { APP_SYSTEMS } from '../config/systems';
@@ -6,6 +7,10 @@ import { useSystem } from '../contexts/SystemContext';
 export function SystemSelectionPage() {
   const navigate = useNavigate();
   const { setSystem } = useSystem();
+
+  useEffect(() => {
+    document.title = 'انتخاب سامانه';
+  }, []);
 
   return (
     <main className="system-selection-page">
@@ -22,6 +27,7 @@ export function SystemSelectionPage() {
               key={system.id}
               type="button"
               className={`system-selection-card ${system.themeClass}`}
+              aria-label={`ورود به ${system.selectionTitle}`}
               onClick={() => {
                 setSystem(system.id);
                 navigate('/login', { replace: true });
@@ -35,6 +41,9 @@ export function SystemSelectionPage() {
                     event.currentTarget.style.display = 'none';
                   }}
                 />
+                <span className="system-selection-card-fallback">
+                  {system.selectionTitle}
+                </span>
               </div>
 
               <div className="system-selection-card-content">

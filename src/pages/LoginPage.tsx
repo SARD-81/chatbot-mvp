@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bot, Lock, UserRound } from "lucide-react";
@@ -15,6 +15,10 @@ export function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    document.title = `${activeSystem.name} | ورود`;
+  }, [activeSystem.name]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
