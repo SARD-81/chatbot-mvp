@@ -173,9 +173,7 @@ export function ChatPage() {
               </div>
 
               <h2>از {activeSystem.name} بپرسید</h2>
-              <p>
-                پرسش آماده را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.
-              </p>
+              <p>پرسش آماده را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.</p>
 
               <div className="prompt-list">
                 {activeSystem.suggestedPrompts.map((prompt) => (
