@@ -3,14 +3,14 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bot, Lock, UserRound } from "lucide-react";
 import { login } from "../utils/storage";
-import {
-  APP_NAME,
-  APP_VERSION,
-  COMPANY_LOGO_SRC,
-  COMPANY_NAME,
-} from "../config/app";
+import { APP_VERSION } from "../config/app";
+import { useSystem } from "../contexts/SystemContext";
+
 export function LoginPage() {
   const navigate = useNavigate();
+  const { activeSystem } = useSystem();
+  const visualEyebrow =
+    activeSystem.id === "dataYar" ? "Data Workspace" : "AI Assistant";
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -30,24 +30,29 @@ export function LoginPage() {
   }
 
   return (
-    <main className="login-page">
+    <main className={`login-page ${activeSystem.themeClass}`}>
       <section className="login-shell">
         <div className="login-panel">
           <div className="login-company-brand">
             <img
-              src="/brand/company-logo2.png"
-              alt={COMPANY_NAME}
-              className="login-company-logo-b"
-            />
-            <img
-              src={COMPANY_LOGO_SRC}
-              alt={COMPANY_NAME}
+              src={activeSystem.logoSrc}
+              alt={activeSystem.name}
               className="login-company-logo"
             />
+            {activeSystem.secondaryLogoSrc && (
+              <img
+                src={activeSystem.secondaryLogoSrc}
+                alt={activeSystem.name}
+                className="login-company-logo-b"
+              />
+            )}
           </div>
           <div className="login-header">
             <h2>ورود به سامانه</h2>
-            <p>برای ادامه، نام کاربری و رمز عبور خود را وارد کنید.</p>
+            <p>
+              برای ادامه ورود به {activeSystem.name}، نام کاربری و رمز عبور خود
+              را وارد کنید.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
@@ -103,14 +108,11 @@ export function LoginPage() {
               <div className="brand-icon">
                 <Bot size={34} />
               </div>
-              <p className="eyebrow">AI Assistant</p>
+              <p className="eyebrow">{visualEyebrow}</p>
             </div>
 
-            <h1>{APP_NAME}</h1>
-            <p>
-              پرسش خود را به زبان طبیعی مطرح کنید و پاسخ تحلیلی، جدول داده و
-              خروجی قابل دانلود دریافت کنید.
-            </p>
+            <h1>{activeSystem.name}</h1>
+            <p>{activeSystem.subtitle}</p>
           </div>
         </div>
       </section>
