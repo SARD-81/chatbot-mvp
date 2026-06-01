@@ -27,6 +27,10 @@ export function ChatPage() {
   const hasMessages = messages.length > 0;
 
   useEffect(() => {
+    document.title = `${activeSystem.name} | چت`;
+  }, [activeSystem.name]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "end",
