@@ -42,7 +42,7 @@ const DATA_YAR_SYSTEM: AppSystemConfig = {
   id: 'dataYar',
   name: 'سامانه جیراکاو',
   subtitle: 'پرسش خود را درباره تسک‌ها، وضعیت‌ها، زمان صرف‌شده و داده‌های جیرا مطرح کنید.',
-  apiBaseUrl: import.meta.env.VITE_DATA_YAR_API_BASE_URL || 'http://localhost:8001',
+  apiBaseUrl: import.meta.env.VITE_DATA_YAR_API_BASE_URL || 'http://172.16.16.248:8088',
   logoSrc: '/brand/company-logo.png',
   secondaryLogoSrc: '/brand/company-logo2.png',
   selectionTitle: 'سامانه جیراکاو',
