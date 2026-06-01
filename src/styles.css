@@ -1007,6 +1007,69 @@ button {
   animation-delay: 280ms;
 }
 
+/* =========================
+   DataYar chat theme
+========================= */
+
+.chat-page.system-theme-data-yar {
+  background:
+    radial-gradient(
+      circle at 20% 76%,
+      rgba(6, 182, 212, 0.22),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 76% 18%,
+      rgba(124, 58, 237, 0.18),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 74% 78%,
+      rgba(37, 99, 235, 0.18),
+      transparent 36%
+    ),
+    linear-gradient(180deg, #f8fbff 0%, #eef7ff 100%);
+}
+
+.chat-page.system-theme-data-yar .chat-shell {
+  background:
+    radial-gradient(
+      circle at 28% 86%,
+      rgba(6, 182, 212, 0.16),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 72% 18%,
+      rgba(124, 58, 237, 0.14),
+      transparent 32%
+    ),
+    rgba(246, 250, 255, 0.9);
+  border-color: rgba(147, 197, 253, 0.52);
+  box-shadow: 0 26px 80px rgba(37, 99, 235, 0.14);
+}
+
+.chat-page.system-theme-data-yar .chat-header {
+  background: rgba(240, 248, 255, 0.76);
+  border-bottom-color: rgba(147, 197, 253, 0.58);
+}
+
+.chat-page.system-theme-data-yar .chat-brand-icon {
+  background: linear-gradient(135deg, #06b6d4, #2563eb 54%, #7c3aed);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.24);
+}
+
+.chat-page.system-theme-data-yar .prompt-list button:hover {
+  border-color: rgba(79, 70, 229, 0.42);
+}
+
+.chat-page.system-theme-data-yar .empty-chat-icon {
+  color: #2563eb;
+}
+
+.chat-page.system-theme-data-yar .loading-bubble span {
+  background: #2563eb;
+}
+
 @keyframes typing-bounce {
   0%,
   80%,
