@@ -1,4 +1,4 @@
-export type ChatTableRow = Record<string, string | number | boolean | null>;
+export type ChatTableRow = Record<string, unknown>;
 
 export interface ChatTable {
   columns: string[];
