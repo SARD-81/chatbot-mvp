@@ -12,24 +12,12 @@ import { ChatMessageBubble } from "../components/ChatMessageBubble";
 import { sendChatMessage } from "../lib/api";
 import type { ChatMessage } from "../types/chat";
 import { logout } from "../utils/storage";
-import { APP_NAME } from "../config/app";
-import {
-  AVERAGE_SCORE_BY_DATE_PROMPT,
-  TOP_GROWTH_BY_RANK_PROMPT,
-  RANK_SCORE_COMPARISON_SCATTER_PROMPT,
-  PERFORMANCE_STATUS_DISTRIBUTION_PROMPT,
-  buildChartForPromptResponse,
-} from "../utils/chatCharts";
-
-const suggestedPrompts = [
-  AVERAGE_SCORE_BY_DATE_PROMPT,
-  TOP_GROWTH_BY_RANK_PROMPT,
-  RANK_SCORE_COMPARISON_SCATTER_PROMPT,
-  PERFORMANCE_STATUS_DISTRIBUTION_PROMPT,
-];
+import { useSystem } from "../contexts/SystemContext";
+import { buildChartForPromptResponse } from "../utils/chatCharts";
 
 export function ChatPage() {
   const navigate = useNavigate();
+  const { activeSystem } = useSystem();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -153,7 +141,7 @@ export function ChatPage() {
     .find((message) => message.role === "assistant" && !message.error)?.id;
 
   return (
-    <main className="chat-page">
+    <main className={`chat-page ${activeSystem.themeClass}`}>
       <section className="chat-shell">
         <header className="chat-header">
           <div className="chat-brand">
@@ -162,8 +150,8 @@ export function ChatPage() {
             </div>
 
             <div>
-              <h1>{APP_NAME}</h1>
-              <p>پرسش خود را بنویسید و پاسخ تحلیلی دریافت کنید.</p>
+              <h1>{activeSystem.name}</h1>
+              <p>{activeSystem.subtitle}</p>
             </div>
           </div>
 
@@ -184,13 +172,13 @@ export function ChatPage() {
                 <Sparkles size={34} />
               </div>
 
-              <h2>از دستیار هوشمند بپرسید</h2>
-              {/* <p>
-                پس از بارگذاری فایل، سؤال خود را درباره داده‌ها مطرح کنید.
-              </p> */}
+              <h2>از {activeSystem.name} بپرسید</h2>
+              <p>
+                پرسش آماده را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.
+              </p>
 
               <div className="prompt-list">
-                {suggestedPrompts.map((prompt) => (
+                {activeSystem.suggestedPrompts.map((prompt) => (
                   <button
                     key={prompt}
                     type="button"
