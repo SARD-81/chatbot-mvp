@@ -35,7 +35,12 @@ export function ChatPage() {
 
   function handleLogout() {
     logout();
-    navigate("/login", { replace: true });
+    navigate("/systems", { replace: true });
+  }
+
+  function handleChangeSystem() {
+    logout();
+    navigate("/systems", { replace: true });
   }
 
   async function submitMessage(userText: string) {
@@ -157,6 +162,15 @@ export function ChatPage() {
 
           <div className="chat-header-actions">
             {/* <FileUpload /> */}
+
+            <button
+              type="button"
+              className="change-system-button chat-change-system-button"
+              onClick={handleChangeSystem}
+              disabled={isSending}
+            >
+              تغییر سامانه
+            </button>
 
             <button className="logout-button" onClick={handleLogout}>
               <LogOut size={18} />
