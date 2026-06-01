@@ -40,20 +40,20 @@ const VAKAV_SYSTEM: AppSystemConfig = {
 
 const DATA_YAR_SYSTEM: AppSystemConfig = {
   id: 'dataYar',
-  name: 'سامانه داده یار',
-  subtitle: 'پرسش خود را درباره داده‌های سامانه داده‌یار مطرح کنید.',
+  name: 'سامانه جیراکاو',
+  subtitle: 'پرسش خود را درباره تسک‌ها، وضعیت‌ها، زمان صرف‌شده و داده‌های جیرا مطرح کنید.',
   apiBaseUrl: import.meta.env.VITE_DATA_YAR_API_BASE_URL || 'http://localhost:8001',
   logoSrc: '/brand/company-logo.png',
   secondaryLogoSrc: '/brand/company-logo2.png',
-  selectionTitle: 'سامانه داده‌یار',
-  selectionDescription: 'محیط اختصاصی تحلیل داده، بررسی فایل‌ها و دریافت پاسخ‌های داده‌محور.',
+  selectionTitle: 'سامانه جیراکاو',
+  selectionDescription: 'دستیار تحلیلی جیرا برای پرسش از تسک‌ها، وضعیت‌ها، ارجاع‌ها و گزارش‌های تیمی.',
   coverImageSrc: '/brand/system-data-yar.png',
   themeClass: 'system-theme-data-yar',
   suggestedPrompts: [
-    'خلاصه‌ای از داده‌های بارگذاری‌شده بده',
-    '۱۰ رکورد اول جدول را نمایش دهید',
-    'مقداری از داده‌های بارگذاری‌شده بده',
-    'ستون‌های موجود در داده‌ها را معرفی کن',
+    '«سید امیررضا داورزنی» چند تسک در وضعیت انجام شده (Done) و چند تسک In Progress دارد؟',
+    'مجموع زمان صرف شده (به ساعت) برای تسک‌های از نوع Bug چقدر است؟',
+    'بیشترین تسک‌ها به چه کسانی ارجاع (assignee) داده شده است؟ (رده‌بندی ۵ نفر اول)',
+    'پنج تسک آخری که با اولویت Highest ساخته شده‌اند چه هستند (کلید و عنوان)؟',
   ],
 };
 
