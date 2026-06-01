@@ -25,11 +25,6 @@ const AVERAGE_SCORE_COLUMN = "میانگین_نمره_دوره_فعلی";
 const RANK_COLUMN = "رده";
 const AVERAGE_GROWTH_COLUMN = "میانگین_رشد";
 
-const PREVIOUS_SCORE_COLUMN = "میانگین_نمره_قبل";
-const CURRENT_SCORE_COLUMN = "میانگین_نمره_فعلی";
-const SUPERVISION_SCORE_COLUMN = "میانگین_نظارت";
-const MEDIAN_GROWTH_COLUMN = "رشد_میانی";
-
 const PERFORMANCE_STATUS_COLUMN = "وضعیت_عملکرد";
 const COUNT_COLUMN = "تعداد";
 const PERCENT_OF_TOTAL_COLUMN = "درصد_از_کل";
@@ -77,11 +72,15 @@ const PREVIOUS_SCORE_COLUMN_CANDIDATES = [
   "میانگین_نمره_قبل",
   "میانگین_نمره_دوره_قبل",
   "میانگین_نمره_دوره_قبلی",
+    "میانگین_نمره_نهایی_دوره_قبلی",
+
 ];
 
 const CURRENT_SCORE_COLUMN_CANDIDATES = [
   "میانگین_نمره_فعلی",
   "میانگین_نمره_دوره_فعلی",
+    "میانگین_نمره_نهایی_دوره_فعلی",
+
 ];
 
 const SUPERVISION_SCORE_COLUMN_CANDIDATES = [
