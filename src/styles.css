@@ -1811,10 +1811,10 @@ button {
 .login-company-brand {
   --login-logo-box-size: 92px;
   --login-logo-primary-scale: 0.8;
-  --login-logo-secondary-scale: 1.92;
+  --login-logo-secondary-scale: 2;
 
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   gap: 40px;
   margin-bottom: clamp(28px, 2.6vh, 26px);
@@ -1829,6 +1829,7 @@ button {
   max-height: var(--login-logo-box-size);
   display: block;
   object-fit: contain;
+  object-position: center;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -1839,7 +1840,7 @@ button {
 
 .login-company-logo {
   transform: scale(var(--login-logo-primary-scale));
-  transform-origin: center;
+  transform-origin: center bottom;
 }
 
 .login-company-logo-b {
