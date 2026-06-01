@@ -54,7 +54,7 @@ export function ChatPage() {
     setIsSending(true);
 
     try {
-      const response = await sendChatMessage(userText);
+      const response = await sendChatMessage(userText, activeSystem);
       const responseChart = buildChartForPromptResponse(userText, response);
 
       const assistantMessage: ChatMessage = {
