@@ -359,6 +359,60 @@ button {
     );
 }
 
+.change-system-button {
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(196, 205, 222, 0.9);
+  color: #344054;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease;
+}
+
+.change-system-button:hover {
+  background: #ffffff;
+  border-color: rgba(92, 139, 255, 0.42);
+  transform: translateY(-1px);
+}
+
+.change-system-button:active {
+  transform: translateY(0);
+}
+
+.change-system-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-panel > .change-system-button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.chat-change-system-button {
+  height: 42px;
+  white-space: nowrap;
+}
+
+.login-page.system-theme-data-yar .change-system-button:hover,
+.chat-page.system-theme-data-yar .change-system-button:hover {
+  border-color: rgba(79, 70, 229, 0.42);
+  color: #3730a3;
+}
+
 .login-version {
   margin-top: 26px;
   color: #8a98ad;

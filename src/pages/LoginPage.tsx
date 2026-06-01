@@ -96,6 +96,14 @@ export function LoginPage() {
             </button>
           </form>
 
+          <button
+            type="button"
+            className="change-system-button"
+            onClick={() => navigate("/systems", { replace: true })}
+          >
+            تغییر سامانه
+          </button>
+
           <div className="login-version">نسخه {APP_VERSION}</div>
         </div>
 
