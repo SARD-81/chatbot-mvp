@@ -55,6 +55,12 @@ export function getActiveSystemId(): AppSystemId {
   return DEFAULT_SYSTEM_ID;
 }
 
+export function hasSelectedSystem() {
+  const storedSystemId = storage.getItem(STORAGE_ACTIVE_SYSTEM_ID_KEY);
+
+  return Boolean(storedSystemId && isAppSystemId(storedSystemId));
+}
+
 export function setActiveSystemId(systemId: AppSystemId) {
   storage.setItem(STORAGE_ACTIVE_SYSTEM_ID_KEY, systemId);
 }
