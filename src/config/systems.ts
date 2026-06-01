@@ -8,6 +8,10 @@ export type AppSystemConfig = {
   logoSrc: string;
   secondaryLogoSrc?: string;
   suggestedPrompts: string[];
+  selectionTitle: string;
+  selectionDescription: string;
+  coverImageSrc: string;
+  themeClass: string;
 };
 
 export const DEFAULT_SYSTEM_ID: AppSystemId = 'vakav';
@@ -22,6 +26,10 @@ const VAKAV_SYSTEM: AppSystemConfig = {
     'http://localhost:8000',
   logoSrc: '/brand/company-logo.png',
   secondaryLogoSrc: '/brand/company-logo2.png',
+  selectionTitle: 'سامانه واکاو',
+  selectionDescription: 'دستیار تحلیلی برای پرسش، گزارش‌گیری و مشاهده نمودارهای مدیریتی.',
+  coverImageSrc: '/brand/system-vakav.png',
+  themeClass: 'system-theme-vakav',
   suggestedPrompts: [
     'نمرات دوره فعلی رو به تفکیک تاریخ برام میانگین بگیر.',
     'میانگین نمره نهایی دوره قبل و فعلی رو به تفکیک رده مقایسه کن و ۱۰ رده‌ای که بیشترین میانگین رشد رو داشتن برام لیست کن.',
@@ -37,6 +45,10 @@ const DATA_YAR_SYSTEM: AppSystemConfig = {
   apiBaseUrl: import.meta.env.VITE_DATA_YAR_API_BASE_URL || 'http://localhost:8001',
   logoSrc: '/brand/company-logo.png',
   secondaryLogoSrc: '/brand/company-logo2.png',
+  selectionTitle: 'سامانه داده‌یار',
+  selectionDescription: 'محیط اختصاصی تحلیل داده، بررسی فایل‌ها و دریافت پاسخ‌های داده‌محور.',
+  coverImageSrc: '/brand/system-data-yar.png',
+  themeClass: 'system-theme-data-yar',
   suggestedPrompts: [
     'خلاصه‌ای از داده‌های بارگذاری‌شده بده',
     '۱۰ رکورد اول جدول را نمایش دهید',
