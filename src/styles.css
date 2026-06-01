@@ -274,6 +274,41 @@ button {
     linear-gradient(135deg, #f7fbff 0%, #eef5fb 100%);
 }
 
+.login-page.system-theme-vakav {
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(64, 191, 160, 0.24),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(90, 139, 255, 0.18),
+      transparent 34%
+    ),
+    linear-gradient(135deg, #f7fbff 0%, #eef5fb 100%);
+}
+
+.login-page.system-theme-data-yar {
+  background:
+    radial-gradient(
+      circle at 16% 18%,
+      rgba(124, 58, 237, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 86% 12%,
+      rgba(6, 182, 212, 0.2),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 50% 92%,
+      rgba(37, 99, 235, 0.16),
+      transparent 34%
+    ),
+    linear-gradient(135deg, #f4f7ff 0%, #eef9ff 46%, #f4f0ff 100%);
+}
+
 .login-shell {
   width: min(1120px, 100%);
   height: min(680px, calc(100svh - 48px));
@@ -302,6 +337,26 @@ button {
       rgba(236, 243, 255, 0.96)
     ),
     radial-gradient(circle, rgba(72, 211, 177, 0.18), transparent 36%);
+}
+
+.login-page.system-theme-data-yar .login-visual {
+  background:
+    radial-gradient(
+      circle at 22% 18%,
+      rgba(124, 58, 237, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 78% 72%,
+      rgba(6, 182, 212, 0.2),
+      transparent 36%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(239, 246, 255, 0.96),
+      rgba(236, 253, 255, 0.92) 48%,
+      rgba(245, 243, 255, 0.96)
+    );
 }
 
 .login-version {
@@ -334,6 +389,14 @@ button {
   background: rgba(92, 135, 255, 0.18);
 }
 
+.login-page.system-theme-data-yar .login-glow-one {
+  background: rgba(6, 182, 212, 0.24);
+}
+
+.login-page.system-theme-data-yar .login-glow-two {
+  background: rgba(124, 58, 237, 0.18);
+}
+
 .brand-card {
   position: relative;
   z-index: 2;
@@ -355,6 +418,20 @@ button {
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
+.login-page.system-theme-data-yar .brand-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(240, 249, 255, 0.74)
+    );
+  border-color: rgba(79, 70, 229, 0.2);
+  box-shadow:
+    0 28px 70px rgba(37, 99, 235, 0.14),
+    0 10px 34px rgba(124, 58, 237, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
 .brand-icon {
   width: 76px;
   height: 76px;
@@ -374,6 +451,15 @@ button {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.login-page.system-theme-data-yar .brand-icon {
+  background: linear-gradient(135deg, #06b6d4, #2563eb 52%, #7c3aed);
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+}
+
+.login-page.system-theme-data-yar .eyebrow {
+  color: #4f46e5;
 }
 
 .brand-card h1,
@@ -456,6 +542,11 @@ button {
   box-shadow: 0 0 0 5px rgba(37, 196, 157, 0.12);
 }
 
+.login-page.system-theme-data-yar .input-box:focus-within {
+  border-color: rgba(37, 99, 235, 0.68);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.12);
+}
+
 .input-box input {
   width: 100%;
   color: var(--color-ink);
@@ -496,6 +587,11 @@ button {
   color: #ffffff;
   background: linear-gradient(135deg, var(--color-green), var(--color-blue));
   box-shadow: 0 18px 34px rgba(37, 196, 157, 0.22);
+}
+
+.login-page.system-theme-data-yar .primary-button {
+  background: linear-gradient(135deg, #06b6d4, #2563eb 54%, #7c3aed);
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.24);
 }
 
 .primary-button:hover {
@@ -1994,6 +2090,8 @@ button {
   --login-logo-box-size: 92px;
   --login-logo-primary-scale: 0.8;
   --login-logo-secondary-scale: 2;
+  --login-logo-primary-y: 0px;
+  --login-logo-secondary-y: 0px;
 
   display: flex;
   align-items: flex-end;
@@ -2001,6 +2099,22 @@ button {
   gap: 40px;
   margin-bottom: clamp(28px, 2.6vh, 26px);
   direction: ltr;
+}
+
+.login-page.system-theme-vakav .login-company-brand {
+  --login-logo-box-size: 92px;
+  --login-logo-primary-scale: 0.8;
+  --login-logo-secondary-scale: 2;
+  --login-logo-primary-y: 0px;
+  --login-logo-secondary-y: 0px;
+}
+
+.login-page.system-theme-data-yar .login-company-brand {
+  --login-logo-box-size: 92px;
+  --login-logo-primary-scale: 0.8;
+  --login-logo-secondary-scale: 2;
+  --login-logo-primary-y: 0px;
+  --login-logo-secondary-y: 0px;
 }
 
 .login-company-logo,
@@ -2021,13 +2135,15 @@ button {
 }
 
 .login-company-logo {
-  transform: scale(var(--login-logo-primary-scale));
+  transform: translateY(var(--login-logo-primary-y))
+    scale(var(--login-logo-primary-scale));
   transform-origin: center bottom;
 }
 
 .login-company-logo-b {
-  transform: scale(var(--login-logo-secondary-scale));
-  transform-origin: center;
+  transform: translateY(var(--login-logo-secondary-y))
+    scale(var(--login-logo-secondary-scale));
+  transform-origin: center bottom;
 }
 
 /* =========================
