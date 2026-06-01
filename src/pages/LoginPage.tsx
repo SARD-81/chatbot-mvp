@@ -35,14 +35,14 @@ export function LoginPage() {
         <div className="login-panel">
           <div className="login-company-brand">
             <img
-              src={COMPANY_LOGO_SRC}
-              alt={COMPANY_NAME}
-              className="login-company-logo"
-            />
-            <img
               src="/brand/company-logo2.png"
               alt={COMPANY_NAME}
               className="login-company-logo-b"
+            />
+            <img
+              src={COMPANY_LOGO_SRC}
+              alt={COMPANY_NAME}
+              className="login-company-logo"
             />
           </div>
           <div className="login-header">

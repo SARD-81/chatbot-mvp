@@ -1809,27 +1809,42 @@ button {
 }
 
 .login-company-brand {
+  --login-logo-box-size: 92px;
+  --login-logo-primary-scale: 0.8;
+  --login-logo-secondary-scale: 1.92;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
-  margin-bottom: clamp(20px, 3vh, 28px);
+  gap: 40px;
+  margin-bottom: clamp(28px, 2.6vh, 26px);
   direction: ltr;
 }
 
 .login-company-logo,
 .login-company-logo-b {
-  width: 82px;
-  height: 82px;
-  max-width: 82px;
-  max-height: 82px;
-  object-fit: contain;
+  width: var(--login-logo-box-size);
+  height: var(--login-logo-box-size);
+  max-width: var(--login-logo-box-size);
+  max-height: var(--login-logo-box-size);
   display: block;
-  padding: 6px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(205, 218, 236, 0.7);
+  object-fit: contain;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   filter: drop-shadow(0 10px 22px rgba(67, 85, 112, 0.1));
+}
+
+.login-company-logo {
+  transform: scale(var(--login-logo-primary-scale));
+  transform-origin: center;
+}
+
+.login-company-logo-b {
+  transform: scale(var(--login-logo-secondary-scale));
+  transform-origin: center;
 }
 
 /* =========================
