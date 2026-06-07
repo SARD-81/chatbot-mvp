@@ -6,6 +6,7 @@ import type {
 import { formatJalaliPeriod } from "../components/charts";
 import type { ChatResponse } from "../types/api";
 import type { SuggestedChart } from "../types/chat";
+import { buildChartFromConfig } from "../lib/chartConfigAdapter";
 
 export const AVERAGE_SCORE_BY_DATE_PROMPT =
   "نمرات دوره فعلی رو به تفکیک تاریخ برام میانگین بگیر.";
@@ -35,7 +36,7 @@ function normalizePrompt(value: string) {
     .replace(/\s+/g, " ")
     .replace(/ي/g, "ی")
     .replace(/ك/g, "ک")
-    .replace(/[.؛;؟?]+$/g, "");
+    .replace(/[.؛;\u061f?]+$/g, "");
 }
 
 function isSamePrompt(first: string, second: string) {
@@ -382,7 +383,12 @@ function buildPerformanceStatusDistributionPieChart(
 export function buildChartForPromptResponse(
   prompt: string,
   response: ChatResponse,
-) {
+): SuggestedChart | undefined {
+  // Priority 1: use chart_config provided by the API (smart auto-charting)
+  const configChart = buildChartFromConfig(response);
+  if (configChart) return configChart;
+
+  // Priority 2: fallback to hardcoded prompt-matching for known prompts
   if (isSamePrompt(prompt, AVERAGE_SCORE_BY_DATE_PROMPT)) {
     return buildAverageScoreByDateChart(response);
   }
