@@ -13,6 +13,15 @@ export interface ChatMetadata {
   is_truncated?: boolean;
 }
 
+export type ChartConfigType = 'table' | 'bar' | 'line' | 'pie' | 'scatter' | 'kpi';
+
+export interface ChartConfig {
+  chart_type: ChartConfigType;
+  x_axis: string | null;
+  y_axis: string | null;
+  size_or_color?: string | null;
+}
+
 export interface ChatResponse {
   conversation_id: string;
   intent_type?: string;
@@ -20,6 +29,7 @@ export interface ChatResponse {
   sql?: string;
   table?: ChatTable;
   metadata?: ChatMetadata;
+  chart_config?: ChartConfig;
 }
 
 export interface UploadResponse {
