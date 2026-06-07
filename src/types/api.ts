@@ -6,13 +6,6 @@ export interface ChatTable {
   row_count: number;
 }
 
-export interface ChatMetadata {
-  compressed?: boolean;
-  answer_mode?: string;
-  download_url?: string;
-  is_truncated?: boolean;
-}
-
 export type ChartConfigType = 'table' | 'bar' | 'line' | 'pie' | 'scatter' | 'kpi';
 
 export interface ChartConfig {
@@ -22,6 +15,14 @@ export interface ChartConfig {
   size_or_color?: string | null;
 }
 
+export interface ChatMetadata {
+  compressed?: boolean;
+  answer_mode?: string;
+  download_url?: string;
+  is_truncated?: boolean;
+  chart_config?: ChartConfig;
+}
+
 export interface ChatResponse {
   conversation_id: string;
   intent_type?: string;
@@ -29,7 +30,6 @@ export interface ChatResponse {
   sql?: string;
   table?: ChatTable;
   metadata?: ChatMetadata;
-  chart_config?: ChartConfig;
 }
 
 export interface UploadResponse {
