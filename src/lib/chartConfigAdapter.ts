@@ -12,25 +12,27 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * Strips surrounding quotes from axis names sent by the API.
- * e.g. '"تاریخ_دوره"' => 'تاریخ_دوره'
+ * e.g. '"\u062a\u0627\u0631\u06cc\u062e_\u062f\u0648\u0631\u0647"' => '\u062a\u0627\u0631\u06cc\u062e_\u062f\u0648\u0631\u0647'
  */
 function stripQuotes(str: string): string {
   return str.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, '').trim();
 }
 
 /**
- * Builds a SuggestedChart from the chart_config returned by the API.
+ * Builds a SuggestedChart from the chart_config nested inside response.metadata.
  * Returns undefined if chart_config is missing, chart_type is 'table',
  * or the required columns are not present in the response table.
  */
 export function buildChartFromConfig(response: ChatResponse): SuggestedChart | undefined {
-  const { chart_config, table } = response;
+  // chart_config lives inside metadata, not at the root of the response
+  const chart_config = response.metadata?.chart_config;
+  const { table } = response;
 
   if (!chart_config) return undefined;
 
   const { chart_type } = chart_config;
 
-  // 'table' means the backend wants a plain table — no chart needed
+  // 'table' means the backend wants a plain table \u2014 no chart needed
   if (chart_type === 'table') return undefined;
 
   // KPI: single number, no table required
@@ -59,7 +61,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
   if (!xAxis || !yAxis) return undefined;
 
-  // ── PIE ────────────────────────────────────────────────────────────────────
+  // \u2500\u2500 PIE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (chart_type === 'pie') {
     const data = table.rows.reduce<PieChartPoint[]>((acc, row) => {
       const name = row[xAxis];
@@ -76,7 +78,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
     return {
       type: 'pie',
-      title: `توزیع ${xAxis}`,
+      title: `\u062a\u0648\u0632\u06cc\u0639 ${xAxis}`,
       description: '',
       data,
       unit: '',
@@ -84,7 +86,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
     };
   }
 
-  // ── LINE / BAR ──────────────────────────────────────────────────────────────
+  // \u2500\u2500 LINE / BAR \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (chart_type === 'line' || chart_type === 'bar') {
     const data = table.rows.reduce<ChartPoint[]>((acc, row) => {
       const label = row[xAxis];
@@ -101,7 +103,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
     return {
       type: chart_type,
-      title: `${yAxis} بر اساس ${xAxis}`,
+      title: `${yAxis} \u0628\u0631 \u0627\u0633\u0627\u0633 ${xAxis}`,
       description: '',
       data,
       seriesName: yAxis,
@@ -110,7 +112,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
     };
   }
 
-  // ── SCATTER ─────────────────────────────────────────────────────────────────
+  // \u2500\u2500 SCATTER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (chart_type === 'scatter') {
     const sizeCol = chart_config.size_or_color
       ? stripQuotes(chart_config.size_or_color)
@@ -142,7 +144,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
     return {
       type: 'scatter',
-      title: `${yAxis} در برابر ${xAxis}`,
+      title: `${yAxis} \u062f\u0631 \u0628\u0631\u0627\u0628\u0631 ${xAxis}`,
       description: '',
       data,
       xAxisName: xAxis,
