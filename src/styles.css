@@ -2291,7 +2291,7 @@ button {
   --login-logo-primary-scale: 0.8;
   --login-logo-secondary-scale: 2;
   --login-logo-primary-y: 0px;
-  --login-logo-secondary-y: 0px;
+  --login-logo-secondary-y: 40px;
 }
 
 .login-page.system-theme-data-yar .login-company-brand {
@@ -2299,7 +2299,7 @@ button {
   --login-logo-primary-scale: 0.8;
   --login-logo-secondary-scale: 2;
   --login-logo-primary-y: 0px;
-  --login-logo-secondary-y: 0px;
+  --login-logo-secondary-y: 40px;
 }
 
 .login-company-logo,
