@@ -69,6 +69,27 @@ function formatCategoryAxisLabel(value: string) {
   return splitLabelIntoLines(value);
 }
 
+function formatScrollableCategoryAxisLabel(value: string) {
+  const normalizedLabel = normalizeCategoryLabel(value);
+  const maxVisibleLabelLength = 24;
+
+  if (normalizedLabel.length <= maxVisibleLabelLength) {
+    return normalizedLabel;
+  }
+
+  return `${normalizedLabel.slice(0, maxVisibleLabelLength - 1)}…`;
+}
+
+function getScrollableBarChartData(data: ChartPoint[]): ChartPoint[] {
+  return data
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      const valueDifference = Number(b.item.value) - Number(a.item.value);
+      return valueDifference || a.index - b.index;
+    })
+    .map(({ item }) => item);
+}
+
 export function EnterpriseBarChart({
   data,
   title = "مقایسه مقادیر",
@@ -84,6 +105,13 @@ export function EnterpriseBarChart({
   const shouldUseScrollableHorizontalLayout = data.length > 10;
   const hasLongLabels = data.some((item) => normalizeCategoryLabel(item.label).length > 14);
   const bottomGridSize = hasLongLabels ? 92 : 30;
+  const scrollableData = useMemo(
+    () =>
+      shouldUseScrollableHorizontalLayout
+        ? getScrollableBarChartData(data)
+        : data,
+    [data, shouldUseScrollableHorizontalLayout],
+  );
 
   const option: EChartsOption = useMemo(() => {
     const tooltip = {
@@ -136,13 +164,14 @@ export function EnterpriseBarChart({
         },
         yAxis: {
           type: "category",
-          data: data.map((item) => item.label),
+          inverse: true,
+          data: scrollableData.map((item) => item.label),
           axisTick: { show: false },
           axisLine: { lineStyle: { color: palette.border } },
           axisLabel: {
             color: palette.mutedForeground,
             fontSize: 11,
-            formatter: formatCategoryAxisLabel,
+            formatter: formatScrollableCategoryAxisLabel,
           },
         },
         dataZoom: [
@@ -152,6 +181,11 @@ export function EnterpriseBarChart({
             startValue: 0,
             endValue: 9,
             filterMode: "none",
+            minValueSpan: 9,
+            maxValueSpan: 9,
+            zoomLock: true,
+            brushSelect: false,
+            showDetail: false,
             width: 18,
             right: 8,
           },
@@ -161,6 +195,12 @@ export function EnterpriseBarChart({
             startValue: 0,
             endValue: 9,
             filterMode: "none",
+            minValueSpan: 9,
+            maxValueSpan: 9,
+            zoomLock: true,
+            zoomOnMouseWheel: false,
+            moveOnMouseWheel: true,
+            moveOnMouseMove: true,
           },
         ],
         series: [
@@ -186,7 +226,7 @@ export function EnterpriseBarChart({
                 ],
               },
             },
-            data: data.map((item) => item.value),
+            data: scrollableData.map((item) => item.value),
           },
         ],
       };
@@ -264,6 +304,7 @@ export function EnterpriseBarChart({
     bottomGridSize,
     data,
     palette,
+    scrollableData,
     seriesName,
     shouldUseScrollableHorizontalLayout,
     unit,
