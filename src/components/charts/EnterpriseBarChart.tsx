@@ -81,33 +81,120 @@ export function EnterpriseBarChart({
 }: EnterpriseBarChartProps) {
   const palette = useEnterpriseChartPalette();
 
+  const shouldUseScrollableHorizontalLayout = data.length > 10;
   const hasLongLabels = data.some((item) => normalizeCategoryLabel(item.label).length > 14);
   const bottomGridSize = hasLongLabels ? 92 : 30;
 
-  const option: EChartsOption = useMemo(
-    () => ({
-      color: [palette.primary],
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "shadow",
-          shadowStyle: {
-            color: "rgba(100,116,139,0.08)",
+  const option: EChartsOption = useMemo(() => {
+    const tooltip = {
+      trigger: "axis" as const,
+      axisPointer: {
+        type: "shadow" as const,
+        shadowStyle: {
+          color: "rgba(100,116,139,0.08)",
+        },
+      },
+      confine: true,
+      appendToBody: true,
+      backgroundColor: palette.tooltipBg,
+      borderColor: palette.border,
+      borderWidth: 1,
+      extraCssText: enterpriseTooltipCss(),
+      textStyle: {
+        color: palette.foreground,
+        fontSize: 12,
+      },
+      valueFormatter: (value: unknown) =>
+        `${formatNumber(Number(value))}${unit ? ` ${unit}` : ""}`,
+    };
+
+    if (shouldUseScrollableHorizontalLayout) {
+      return {
+        color: [palette.primary],
+        tooltip,
+        grid: {
+          top: 26,
+          right: 48,
+          bottom: 30,
+          left: 120,
+          containLabel: true,
+        },
+        xAxis: {
+          type: "value",
+          scale: true,
+          axisLabel: {
+            color: palette.mutedForeground,
+            fontSize: 11,
+            formatter: (value: number) => formatNumber(value, 0),
+          },
+          splitLine: {
+            lineStyle: {
+              color: palette.grid,
+              type: "dashed",
+            },
           },
         },
-        confine: true,
-        appendToBody: true,
-        backgroundColor: palette.tooltipBg,
-        borderColor: palette.border,
-        borderWidth: 1,
-        extraCssText: enterpriseTooltipCss(),
-        textStyle: {
-          color: palette.foreground,
-          fontSize: 12,
+        yAxis: {
+          type: "category",
+          data: data.map((item) => item.label),
+          axisTick: { show: false },
+          axisLine: { lineStyle: { color: palette.border } },
+          axisLabel: {
+            color: palette.mutedForeground,
+            fontSize: 11,
+            formatter: formatCategoryAxisLabel,
+          },
         },
-        valueFormatter: (value) =>
-          `${formatNumber(Number(value))}${unit ? ` ${unit}` : ""}`,
-      },
+        dataZoom: [
+          {
+            type: "slider",
+            yAxisIndex: 0,
+            startValue: 0,
+            endValue: 9,
+            filterMode: "none",
+            width: 18,
+            right: 8,
+          },
+          {
+            type: "inside",
+            yAxisIndex: 0,
+            startValue: 0,
+            endValue: 9,
+            filterMode: "none",
+          },
+        ],
+        series: [
+          {
+            name: seriesName,
+            type: "bar",
+            barWidth: "46%",
+            barMaxWidth: 28,
+            emphasis: {
+              focus: "series",
+            },
+            itemStyle: {
+              borderRadius: [6, 14, 14, 6],
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 1,
+                y2: 0,
+                colorStops: [
+                  { offset: 0, color: palette.primary },
+                  { offset: 1, color: palette.accent },
+                ],
+              },
+            },
+            data: data.map((item) => item.value),
+          },
+        ],
+      };
+    }
+
+    return {
+      color: [palette.primary],
+      tooltip,
       grid: {
         top: 26,
         right: 14,
@@ -172,9 +259,15 @@ export function EnterpriseBarChart({
           data: data.map((item) => item.value),
         },
       ],
-    }),
-    [bottomGridSize, data, palette, seriesName, unit]
-  );
+    };
+  }, [
+    bottomGridSize,
+    data,
+    palette,
+    seriesName,
+    shouldUseScrollableHorizontalLayout,
+    unit,
+  ]);
 
   return (
     <BaseChart

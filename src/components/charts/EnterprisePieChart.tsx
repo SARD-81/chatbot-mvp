@@ -20,6 +20,44 @@ type PieFormatterParam = {
   percent?: unknown;
 };
 
+function buildDisplayPieData(data: PieChartPoint[]): PieChartPoint[] {
+  if (data.length <= 10) {
+    return data;
+  }
+
+  const allItemsHaveNumericPercent = data.every((item) =>
+    Number.isFinite(item.percent)
+  );
+  const sortedItems = data
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      const valueDifference = Number(b.item.value) - Number(a.item.value);
+
+      return valueDifference || a.index - b.index;
+    });
+  const topItems = sortedItems.slice(0, 9).map(({ item }) => item);
+  const remainingItems = sortedItems.slice(9).map(({ item }) => item);
+  const otherValue = remainingItems.reduce(
+    (sum, item) => sum + Number(item.value),
+    0
+  );
+  const otherItem: PieChartPoint = {
+    name: "سایر موارد",
+    value: otherValue,
+  };
+
+  if (allItemsHaveNumericPercent) {
+    const otherPercent = remainingItems.reduce(
+      (sum, item) => sum + Number(item.percent),
+      0
+    );
+
+    otherItem.percent = Math.round(otherPercent * 100) / 100;
+  }
+
+  return [...topItems, otherItem];
+}
+
 function getPieTooltipParam(params: TooltipComponentFormatterCallbackParams) {
   return Array.isArray(params) ? params[0] : params;
 }
@@ -56,6 +94,7 @@ export function EnterprisePieChart({
   className,
 }: EnterprisePieChartProps) {
   const palette = useEnterpriseChartPalette();
+  const displayData = useMemo(() => buildDisplayPieData(data), [data]);
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -148,11 +187,11 @@ export function EnterprisePieChart({
               shadowColor: "rgba(15, 23, 42, 0.22)",
             },
           },
-          data,
+          data: displayData,
         },
       ],
     }),
-    [data, palette, unit]
+    [displayData, palette, unit]
   );
 
   return (
