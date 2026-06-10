@@ -69,10 +69,10 @@ function formatCategoryAxisLabel(value: string) {
   return splitLabelIntoLines(value);
 }
 
-// For horizontal (scrollable) layout: wrap into multiple lines instead of truncating
+// For horizontal (scrollable) layout: wrap into multiple lines
 function formatScrollableCategoryAxisLabel(value: string) {
   const normalizedLabel = normalizeCategoryLabel(value);
-  return splitLabelIntoLines(normalizedLabel, 18, 3);
+  return splitLabelIntoLines(normalizedLabel, 12, 3);
 }
 
 function getScrollableBarChartData(data: ChartPoint[]): ChartPoint[] {
@@ -139,8 +139,8 @@ export function EnterpriseBarChart({
           top: 26,
           right: 48,
           bottom: 30,
-          left: 16,
-          containLabel: true,
+          left: 220,
+          containLabel: false,
         },
         xAxis: {
           type: "value",
@@ -166,10 +166,11 @@ export function EnterpriseBarChart({
           axisLabel: {
             color: palette.mutedForeground,
             fontSize: 13,
-            fontWeight: "bold",
+            fontWeight: 700,
+            fontFamily: "AppFont, ui-sans-serif, system-ui, sans-serif",
             overflow: "break",
-            width: 200,
-            lineHeight: 20,
+            width: 210,
+            lineHeight: 22,
             formatter: formatScrollableCategoryAxisLabel,
           },
         },
@@ -206,8 +207,9 @@ export function EnterpriseBarChart({
           {
             name: seriesName,
             type: "bar",
-            barWidth: "46%",
-            barMaxWidth: 28,
+            barWidth: "38%",
+            barMaxWidth: 24,
+            barMinHeight: 4,
             emphasis: {
               focus: "series",
             },
