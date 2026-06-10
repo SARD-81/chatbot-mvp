@@ -68,7 +68,7 @@ const DOC_MANAGEMENT_SYSTEM: AppSystemConfig = {
   secondaryLogoSrc: '/brand/company-logo2.png',
   selectionTitle: 'مدیریت هوشمند اسناد',
   selectionDescription: 'سامانه بایگانی، جستجو و مدیریت هوشمند اسناد سازمانی.',
-  coverImageSrc: '/brand/system-doc-management.png',
+  coverImageSrc: '/brand/system-dms.png',
   themeClass: 'system-theme-doc-management',
   externalUrl: 'http://172.16.16.184:8000/',
   suggestedPrompts: [],
