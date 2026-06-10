@@ -58,8 +58,8 @@ function splitLabelIntoLines(label: string, maxLineLength = 14, maxLines = 3) {
 
     lines[lastLineIndex] =
       lastLine.length >= maxLineLength
-        ? `${lastLine.slice(0, maxLineLength - 1)}…`
-        : `${lastLine}…`;
+        ? `${lastLine.slice(0, maxLineLength - 1)}\u2026`
+        : `${lastLine}\u2026`;
   }
 
   return lines.join("\n");
@@ -69,15 +69,58 @@ function formatCategoryAxisLabel(value: string) {
   return splitLabelIntoLines(value);
 }
 
+/**
+ * For the scrollable (>10 items) horizontal layout:
+ * Show the full label wrapped into multiple lines instead of truncating.
+ * Words are wrapped at maxLineLength=18 chars per line, up to maxLines=4.
+ */
 function formatScrollableCategoryAxisLabel(value: string) {
   const normalizedLabel = normalizeCategoryLabel(value);
-  const maxVisibleLabelLength = 24;
+  const MAX_LINE = 18;
+  const MAX_LINES = 4;
 
-  if (normalizedLabel.length <= maxVisibleLabelLength) {
+  if (normalizedLabel.length <= MAX_LINE) {
     return normalizedLabel;
   }
 
-  return `${normalizedLabel.slice(0, maxVisibleLabelLength - 1)}…`;
+  const words = normalizedLabel.split(" ");
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const nextLine = currentLine ? `${currentLine} ${word}` : word;
+
+    if (nextLine.length <= MAX_LINE) {
+      currentLine = nextLine;
+      continue;
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    // If a single word exceeds MAX_LINE, hard-break it
+    if (word.length > MAX_LINE) {
+      let remaining = word;
+      while (remaining.length > MAX_LINE && lines.length < MAX_LINES - 1) {
+        lines.push(remaining.slice(0, MAX_LINE));
+        remaining = remaining.slice(MAX_LINE);
+      }
+      currentLine = remaining;
+    } else {
+      currentLine = word;
+    }
+
+    if (lines.length >= MAX_LINES - 1) {
+      break;
+    }
+  }
+
+  if (currentLine && lines.length < MAX_LINES) {
+    lines.push(currentLine);
+  }
+
+  return lines.join("\n");
 }
 
 function getScrollableBarChartData(data: ChartPoint[]): ChartPoint[] {
@@ -92,9 +135,9 @@ function getScrollableBarChartData(data: ChartPoint[]): ChartPoint[] {
 
 export function EnterpriseBarChart({
   data,
-  title = "مقایسه مقادیر",
-  description = "مقایسه دسته‌ای داده‌ها در یک نگاه مدیریتی",
-  seriesName = "مقدار",
+  title = "\u0645\u0642\u0627\u06CC\u0633\u0647 \u0645\u0642\u0627\u062F\u06CC\u0631",
+  description = "\u0645\u0642\u0627\u06CC\u0633\u0647 \u062F\u0633\u062A\u0647\u200C\u0627\u06CC \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u062F\u0631 \u06CC\u06A9 \u0646\u06AF\u0627\u0647 \u0645\u062F\u06CC\u0631\u06CC\u062A\u06CC",
+  seriesName = "\u0645\u0642\u062F\u0627\u0631",
   unit = "",
   height,
   loading,
@@ -105,6 +148,18 @@ export function EnterpriseBarChart({
   const shouldUseScrollableHorizontalLayout = data.length > 10;
   const hasLongLabels = data.some((item) => normalizeCategoryLabel(item.label).length > 14);
   const bottomGridSize = hasLongLabels ? 92 : 30;
+
+  // Calculate dynamic left margin for scrollable layout based on longest label
+  const maxLabelLength = useMemo(() => {
+    if (!shouldUseScrollableHorizontalLayout) return 0;
+    return Math.max(...data.map((item) => normalizeCategoryLabel(item.label).length));
+  }, [data, shouldUseScrollableHorizontalLayout]);
+
+  // Each character ~7px wide, cap at 240px, min 140px
+  const dynamicLeftMargin = shouldUseScrollableHorizontalLayout
+    ? Math.min(Math.max(Math.ceil(maxLabelLength / 18) * 18 * 7, 140), 240)
+    : 120;
+
   const scrollableData = useMemo(
     () =>
       shouldUseScrollableHorizontalLayout
@@ -144,8 +199,8 @@ export function EnterpriseBarChart({
           top: 26,
           right: 48,
           bottom: 30,
-          left: 120,
-          containLabel: true,
+          left: dynamicLeftMargin,
+          containLabel: false,
         },
         xAxis: {
           type: "value",
@@ -169,8 +224,12 @@ export function EnterpriseBarChart({
           axisTick: { show: false },
           axisLine: { lineStyle: { color: palette.border } },
           axisLabel: {
-            color: palette.mutedForeground,
-            fontSize: 11,
+            color: palette.foreground,
+            fontSize: 13,
+            fontWeight: "bold",
+            width: dynamicLeftMargin - 8,
+            overflow: "break",
+            lineHeight: 18,
             formatter: formatScrollableCategoryAxisLabel,
           },
         },
@@ -303,6 +362,7 @@ export function EnterpriseBarChart({
   }, [
     bottomGridSize,
     data,
+    dynamicLeftMargin,
     palette,
     scrollableData,
     seriesName,
