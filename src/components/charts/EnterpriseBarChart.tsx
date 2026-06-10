@@ -11,6 +11,10 @@ type EnterpriseBarChartProps = EnterpriseChartProps & {
   unit?: string;
 };
 
+const HORIZONTAL_VISIBLE_ROWS = 10;
+const ROW_HEIGHT_PX = 56;
+const CHART_VERTICAL_PADDING_PX = 80;
+
 function normalizeCategoryLabel(value: string) {
   return value.trim().replace(/\s+/g, " ");
 }
@@ -69,7 +73,6 @@ function formatCategoryAxisLabel(value: string) {
   return splitLabelIntoLines(value);
 }
 
-// For horizontal (scrollable) layout: wrap into multiple lines
 function formatScrollableCategoryAxisLabel(value: string) {
   const normalizedLabel = normalizeCategoryLabel(value);
   return splitLabelIntoLines(normalizedLabel, 12, 3);
@@ -100,6 +103,7 @@ export function EnterpriseBarChart({
   const shouldUseScrollableHorizontalLayout = data.length > 10;
   const hasLongLabels = data.some((item) => normalizeCategoryLabel(item.label).length > 14);
   const bottomGridSize = hasLongLabels ? 92 : 30;
+
   const scrollableData = useMemo(
     () =>
       shouldUseScrollableHorizontalLayout
@@ -107,6 +111,13 @@ export function EnterpriseBarChart({
         : data,
     [data, shouldUseScrollableHorizontalLayout],
   );
+
+  // Dynamic height: each visible row gets ROW_HEIGHT_PX so multi-line labels never overlap
+  const horizontalChartHeight = useMemo(() => {
+    if (height) return height;
+    const visibleRows = Math.min(data.length, HORIZONTAL_VISIBLE_ROWS);
+    return visibleRows * ROW_HEIGHT_PX + CHART_VERTICAL_PADDING_PX;
+  }, [data.length, height]);
 
   const option: EChartsOption = useMemo(() => {
     const tooltip = {
@@ -179,10 +190,10 @@ export function EnterpriseBarChart({
             type: "slider",
             yAxisIndex: 0,
             startValue: 0,
-            endValue: 9,
+            endValue: HORIZONTAL_VISIBLE_ROWS - 1,
             filterMode: "none",
-            minValueSpan: 9,
-            maxValueSpan: 9,
+            minValueSpan: HORIZONTAL_VISIBLE_ROWS - 1,
+            maxValueSpan: HORIZONTAL_VISIBLE_ROWS - 1,
             zoomLock: true,
             brushSelect: false,
             showDetail: false,
@@ -193,10 +204,10 @@ export function EnterpriseBarChart({
             type: "inside",
             yAxisIndex: 0,
             startValue: 0,
-            endValue: 9,
+            endValue: HORIZONTAL_VISIBLE_ROWS - 1,
             filterMode: "none",
-            minValueSpan: 9,
-            maxValueSpan: 9,
+            minValueSpan: HORIZONTAL_VISIBLE_ROWS - 1,
+            maxValueSpan: HORIZONTAL_VISIBLE_ROWS - 1,
             zoomLock: true,
             zoomOnMouseWheel: false,
             moveOnMouseWheel: true,
@@ -207,8 +218,8 @@ export function EnterpriseBarChart({
           {
             name: seriesName,
             type: "bar",
-            barWidth: 18,
-            barCategoryGap: "60%",
+            barWidth: 20,
+            barCategoryGap: "50%",
             barMinHeight: 4,
             emphasis: {
               focus: "series",
@@ -316,7 +327,7 @@ export function EnterpriseBarChart({
       title={title}
       description={description}
       option={option}
-      height={height}
+      height={shouldUseScrollableHorizontalLayout ? horizontalChartHeight : height}
       loading={loading}
       empty={!loading && data.length === 0}
       className={className}
