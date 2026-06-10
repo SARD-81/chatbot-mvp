@@ -9,54 +9,77 @@ import { hasSelectedSystem, isAuthenticated } from './utils/storage';
 
 function useHasCurrentSystemSelection() {
   const { hasSystemSelection } = useSystem();
-
   return hasSystemSelection && hasSelectedSystem();
 }
 
+/**
+ * Home redirect:
+ * - Not authenticated → /login
+ * - Authenticated but no system → /systems
+ * - Authenticated + system selected → /chat
+ */
 function HomeRedirect() {
-  const hasSystemSelection = useHasCurrentSystemSelection();
-
-  if (!hasSystemSelection) {
-    return <Navigate to="/systems" replace />;
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
   }
-
-  return isAuthenticated() ? <Navigate to="/chat" replace /> : <Navigate to="/login" replace />;
+  const hasSystem = hasSelectedSystem();
+  return hasSystem ? <Navigate to="/chat" replace /> : <Navigate to="/systems" replace />;
 }
 
-function RequireSystemSelection({ children }: { children: ReactNode }) {
-  const hasSystemSelection = useHasCurrentSystemSelection();
+/**
+ * Guard: only allow access if user is authenticated.
+ * Redirects to /login otherwise.
+ */
+function RequireAuth({ children }: { children: ReactNode }) {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
 
-  if (!hasSystemSelection) {
+/**
+ * Guard: only allow access if user is authenticated AND has selected a system.
+ */
+function RequireAuthAndSystem({ children }: { children: ReactNode }) {
+  const hasSystem = useHasCurrentSystemSelection();
+
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!hasSystem) {
     return <Navigate to="/systems" replace />;
   }
-
   return children;
 }
 
 export default function App() {
   return (
     <Routes>
+      {/* Home: smart redirect based on auth + system state */}
       <Route path="/" element={<HomeRedirect />} />
 
-      <Route path="/systems" element={<SystemSelectionPage />} />
+      {/* Step 1: Global login — no system needed */}
+      <Route path="/login" element={<LoginPage />} />
 
+      {/* Step 2: Pick a system — must be authenticated */}
       <Route
-        path="/login"
+        path="/systems"
         element={
-          <RequireSystemSelection>
-            <LoginPage />
-          </RequireSystemSelection>
+          <RequireAuth>
+            <SystemSelectionPage />
+          </RequireAuth>
         }
       />
 
+      {/* Step 3: Chat — must be authenticated AND have a system */}
       <Route
         path="/chat"
         element={
-          <RequireSystemSelection>
+          <RequireAuthAndSystem>
             <ProtectedRoute>
               <ChatPage />
             </ProtectedRoute>
-          </RequireSystemSelection>
+          </RequireAuthAndSystem>
         }
       />
 

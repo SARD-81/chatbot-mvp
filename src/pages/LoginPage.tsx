@@ -2,23 +2,30 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bot, Lock, UserRound } from "lucide-react";
-import { login } from "../utils/storage";
+import { login, isAuthenticated } from "../utils/storage";
 import { APP_VERSION } from "../config/app";
-import { useSystem } from "../contexts/SystemContext";
+
+const BRAND_NAME = "سامانه‌های هوشمند بهاران";
+const BRAND_SUBTITLE = "دستیار هوشمند تحلیل و پردازش اطلاعات سازمانی";
+const BRAND_EYEBROW = "هوش مصنوعی سازمانی";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { activeSystem } = useSystem();
-  const visualEyebrow =
-    activeSystem.id === "dataYar" ? "Data Workspace" : "AI Assistant";
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // If already authenticated, skip to systems page
   useEffect(() => {
-    document.title = `${activeSystem.name} | ورود`;
-  }, [activeSystem.name]);
+    if (isAuthenticated()) {
+      navigate("/systems", { replace: true });
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    document.title = `${BRAND_NAME} | ورود`;
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,32 +37,17 @@ export function LoginPage() {
       return;
     }
 
-    navigate("/chat", { replace: true });
+    navigate("/systems", { replace: true });
   }
 
   return (
-    <main className={`login-page ${activeSystem.themeClass}`}>
+    <main className="login-page theme-vakav">
       <section className="login-shell">
         <div className="login-panel">
-          <div className="login-company-brand">
-            <img
-              src={activeSystem.logoSrc}
-              alt={activeSystem.name}
-              className="login-company-logo"
-            />
-            {activeSystem.secondaryLogoSrc && (
-              <img
-                src={activeSystem.secondaryLogoSrc}
-                alt={activeSystem.name}
-                className="login-company-logo-b"
-              />
-            )}
-          </div>
           <div className="login-header">
             <h2>ورود به سامانه</h2>
             <p>
-              برای ادامه ورود به {activeSystem.name}، نام کاربری و رمز عبور خود
-              را وارد کنید.
+              برای ادامه، نام کاربری و رمز عبور خود را وارد کنید.
             </p>
           </div>
 
@@ -100,14 +92,6 @@ export function LoginPage() {
             </button>
           </form>
 
-          <button
-            type="button"
-            className="change-system-button"
-            onClick={() => navigate("/systems", { replace: true })}
-          >
-            تغییر سامانه
-          </button>
-
           <div className="login-version">نسخه {APP_VERSION}</div>
         </div>
 
@@ -120,11 +104,11 @@ export function LoginPage() {
               <div className="brand-icon">
                 <Bot size={34} />
               </div>
-              <p className="eyebrow">{visualEyebrow}</p>
+              <p className="eyebrow">{BRAND_EYEBROW}</p>
             </div>
 
-            <h1>{activeSystem.name}</h1>
-            <p>{activeSystem.subtitle}</p>
+            <h1>{BRAND_NAME}</h1>
+            <p>{BRAND_SUBTITLE}</p>
           </div>
         </div>
       </section>

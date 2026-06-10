@@ -30,7 +30,8 @@ export function SystemSelectionPage() {
               aria-label={`ورود به ${system.selectionTitle}`}
               onClick={() => {
                 setSystem(system.id);
-                navigate('/login', { replace: true });
+                // After system selection, go directly to chat
+                navigate('/chat', { replace: true });
               }}
             >
               <div className="system-selection-card-visual">
