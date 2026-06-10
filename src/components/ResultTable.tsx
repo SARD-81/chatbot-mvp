@@ -25,8 +25,8 @@ function formatColumnName(column: string) {
 
 function normalizeDigits(value: string) {
   return value
-    .replace(/[\u06F0-\u06F9]/g, (digit) => String('\u06F0\u06F1\u06F2\u06F3\u06F4\u06F5\u06F6\u06F7\u06F8\u06F9'.indexOf(digit)))
-    .replace(/[\u0660-\u0669]/g, (digit) => String('\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669'.indexOf(digit)));
+    .replace(/[۰-۹]/g, (digit) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)))
+    .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)));
 }
 
 function isDateLikeColumn(columnName: string) {
@@ -41,9 +41,9 @@ function isDateLikeColumn(columnName: string) {
     normalizedColumn.includes('shamsi') ||
     normalizedColumn.includes('persian_date') ||
     normalizedColumn.includes('tarikh') ||
-    normalizedColumn.includes('\u062A\u0627\u0631\u06CC\u062E') ||
-    normalizedColumn.includes('\u062A\u0627\u0631\u06CC\u062E') ||
-    normalizedColumn.includes('\u0632\u0645\u0627\u0646')
+    normalizedColumn.includes('تاریخ') ||
+    normalizedColumn.includes('تاريخ') ||
+    normalizedColumn.includes('زمان')
   );
 }
 
@@ -107,7 +107,7 @@ function formatDateValue(value: unknown) {
 
 function formatCellValue(value: unknown, columnName: string) {
   if (value === null || value === undefined || value === '') {
-    return '\u2014';
+    return '—';
   }
 
   if (isDateLikeColumn(columnName)) {
@@ -151,10 +151,6 @@ function TableView({ table, mode = 'inline' }: TableViewProps) {
       <table className="data-table">
         <thead>
           <tr>
-            {/* Row index column header */}
-            <th style={{ minWidth: 52, maxWidth: 52, width: 52, textAlign: 'center' }}>
-              \u0631\u062F\u06CC\u0641
-            </th>
             {table.columns.map((column) => (
               <th key={column} title={column}>
                 {formatColumnName(column)}
@@ -166,10 +162,6 @@ function TableView({ table, mode = 'inline' }: TableViewProps) {
         <tbody>
           {table.rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {/* Row index cell */}
-              <td style={{ minWidth: 52, maxWidth: 52, width: 52, textAlign: 'center', color: '#8a98ad', fontWeight: 700, fontSize: 12 }}>
-                {rowIndex + 1}
-              </td>
               {table.columns.map((column) => {
                 const formattedValue = formatCellValue(row[column], column);
 
@@ -193,10 +185,10 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
   const visibleRowsCount = table.rows.length;
   const totalRowsCount = table.row_count ?? visibleRowsCount;
   const columnCount = table.columns.length;
-  const rowCount = table.rows.length;
+const rowCount = table.rows.length;
 
-  const isCompactTable = columnCount <= 4 && rowCount <= 6;
-  const isMediumTable = columnCount <= 8 && rowCount <= 12;
+const isCompactTable = columnCount <= 4 && rowCount <= 6;
+const isMediumTable = columnCount <= 8 && rowCount <= 12;
 
   const downloadUrl = metadata?.download_url
     ? getDownloadUrl(metadata.download_url)
@@ -229,16 +221,16 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
       <div className="result-table-card">
         <div className="result-table-header">
           <div>
-            <h3>\u0646\u062A\u06CC\u062C\u0647 \u062C\u062F\u0648\u0644\u06CC</h3>
+            <h3>نتیجه جدولی</h3>
             <p>
               {totalRowsCount > visibleRowsCount
-                ? `\u0646\u0645\u0627\u06CC\u0634 ${visibleRowsCount.toLocaleString('fa-IR')} \u0631\u062F\u06CC\u0641 \u0627\u0632 ${totalRowsCount.toLocaleString('fa-IR')} \u0631\u06A9\u0648\u0631\u062F`
-                : `${totalRowsCount.toLocaleString('fa-IR')} \u0631\u06A9\u0648\u0631\u062F`}
+                ? `نمایش ${visibleRowsCount.toLocaleString('fa-IR')} ردیف از ${totalRowsCount.toLocaleString('fa-IR')} رکورد`
+                : `${totalRowsCount.toLocaleString('fa-IR')} رکورد`}
             </p>
           </div>
 
           {metadata?.is_truncated && (
-            <span className="table-badge">\u0646\u0645\u0627\u06CC\u0634 \u062E\u0644\u0627\u0635\u0647</span>
+            <span className="table-badge">نمایش خلاصه</span>
           )}
         </div>
 
@@ -251,7 +243,7 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
             onClick={() => setIsModalOpen(true)}
           >
             <Maximize2 size={17} />
-            \u0628\u0632\u0631\u06AF\u0646\u0645\u0627\u06CC\u06CC \u062C\u062F\u0648\u0644
+            بزرگنمایی جدول
           </button>
 
           {downloadUrl && (
@@ -263,7 +255,7 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
               rel="noreferrer"
             >
               <Download size={17} />
-              {metadata?.is_truncated ? '\u062F\u0627\u0646\u0644\u0648\u062F \u06AF\u0632\u0627\u0631\u0634 \u06A9\u0627\u0645\u0644 CSV' : '\u062F\u0627\u0646\u0644\u0648\u062F CSV'}
+              {metadata?.is_truncated ? 'دانلود گزارش کامل CSV' : 'دانلود CSV'}
             </a>
           )}
         </div>
@@ -276,24 +268,24 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
           onMouseDown={() => setIsModalOpen(false)}
         >
           <section
-            className={[
-              'table-modal',
-              isCompactTable ? 'table-modal-compact' : '',
-              isMediumTable && !isCompactTable ? 'table-modal-medium' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            role="dialog"
-            aria-modal="true"
-            aria-label="\u0628\u0632\u0631\u06AF\u0646\u0645\u0627\u06CC\u06CC \u062C\u062F\u0648\u0644"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
+  className={[
+    'table-modal',
+    isCompactTable ? 'table-modal-compact' : '',
+    isMediumTable && !isCompactTable ? 'table-modal-medium' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')}
+  role="dialog"
+  aria-modal="true"
+  aria-label="بزرگنمایی جدول"
+  onMouseDown={(event) => event.stopPropagation()}
+>
             <header className="table-modal-header">
               <div>
-                <h2>\u0628\u0632\u0631\u06AF\u0646\u0645\u0627\u06CC\u06CC \u062C\u062F\u0648\u0644</h2>
+                <h2>بزرگنمایی جدول</h2>
                 <p>
-                  \u0646\u0645\u0627\u06CC\u0634 {visibleRowsCount.toLocaleString('fa-IR')} \u0631\u062F\u06CC\u0641 \u0627\u0632{' '}
-                  {totalRowsCount.toLocaleString('fa-IR')} \u0631\u06A9\u0648\u0631\u062F
+                  نمایش {visibleRowsCount.toLocaleString('fa-IR')} ردیف از{' '}
+                  {totalRowsCount.toLocaleString('fa-IR')} رکورد
                 </p>
               </div>
 
@@ -307,7 +299,7 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
                     rel="noreferrer"
                   >
                     <Download size={17} />
-                    \u062F\u0627\u0646\u0644\u0648\u062F CSV
+                    دانلود CSV
                   </a>
                 )}
 
@@ -315,7 +307,7 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
                   type="button"
                   className="modal-close-button"
                   onClick={() => setIsModalOpen(false)}
-                  aria-label="\u0628\u0633\u062A\u0646"
+                  aria-label="بستن"
                 >
                   <X size={22} />
                 </button>
@@ -323,7 +315,10 @@ export function ResultTable({ table, metadata }: ResultTableProps) {
             </header>
 
             <div className="table-modal-body">
-              <TableView table={table} mode="modal" />
+              <TableView
+  table={table}
+  mode="modal"
+/>
             </div>
           </section>
         </div>
