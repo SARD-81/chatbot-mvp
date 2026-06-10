@@ -588,10 +588,10 @@ button {
 /* Company logo / brand area inside the login visual card */
 .login-company-brand {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 20px;
   margin-bottom: 4px;
 }
 
