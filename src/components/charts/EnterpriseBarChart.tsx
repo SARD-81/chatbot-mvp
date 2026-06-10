@@ -14,12 +14,14 @@ type EnterpriseBarChartProps = EnterpriseChartProps & {
 const HORIZONTAL_VISIBLE_ROWS = 10;
 const ROW_HEIGHT_PX = 56;
 const CHART_VERTICAL_PADDING_PX = 80;
+const LABEL_AREA_WIDTH = 260;
+const GRID_LEFT = LABEL_AREA_WIDTH + 20;
 
 function normalizeCategoryLabel(value: string) {
   return value.trim().replace(/\s+/g, " ");
 }
 
-function splitLabelIntoLines(label: string, maxLineLength = 14, maxLines = 3) {
+function splitLabelIntoLines(label: string, maxLineLength = 16, maxLines = 3) {
   const normalizedLabel = normalizeCategoryLabel(label);
 
   if (normalizedLabel.length <= maxLineLength) {
@@ -75,7 +77,7 @@ function formatCategoryAxisLabel(value: string) {
 
 function formatScrollableCategoryAxisLabel(value: string) {
   const normalizedLabel = normalizeCategoryLabel(value);
-  return splitLabelIntoLines(normalizedLabel, 12, 3);
+  return splitLabelIntoLines(normalizedLabel, 16, 3);
 }
 
 function getScrollableBarChartData(data: ChartPoint[]): ChartPoint[] {
@@ -112,7 +114,6 @@ export function EnterpriseBarChart({
     [data, shouldUseScrollableHorizontalLayout],
   );
 
-  // Dynamic height: each visible row gets ROW_HEIGHT_PX so multi-line labels never overlap
   const horizontalChartHeight = useMemo(() => {
     if (height) return height;
     const visibleRows = Math.min(data.length, HORIZONTAL_VISIBLE_ROWS);
@@ -150,7 +151,7 @@ export function EnterpriseBarChart({
           top: 26,
           right: 48,
           bottom: 30,
-          left: 220,
+          left: GRID_LEFT,
           containLabel: false,
         },
         xAxis: {
@@ -179,8 +180,9 @@ export function EnterpriseBarChart({
             fontSize: 13,
             fontWeight: 700,
             fontFamily: "AppFont, ui-sans-serif, system-ui, sans-serif",
+            align: "right",
             overflow: "break",
-            width: 210,
+            width: LABEL_AREA_WIDTH,
             lineHeight: 22,
             formatter: formatScrollableCategoryAxisLabel,
           },
