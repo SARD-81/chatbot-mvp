@@ -20,6 +20,8 @@ export type ScatterChartPoint = {
   currentScore: number;
   supervisionScore: number;
   growth: number;
+  /** All original key-value pairs from the source row — used for dynamic tooltip */
+  rawRow?: Record<string, unknown>;
 };
 
 export type EnterpriseChartProps = {

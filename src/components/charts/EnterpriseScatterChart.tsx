@@ -15,56 +15,70 @@ type EnterpriseScatterChartProps = EnterpriseChartProps & {
   unit?: string;
 };
 
+/**
+ * Series item layout:
+ * index 0 → previousScore  (x axis)
+ * index 1 → currentScore   (y axis)
+ * index 2 → supervisionScore
+ * index 3 → growth         (bubble size)
+ * index 4 → rank           (label)
+ * index 5 → rawRow         (original object — all fields for tooltip)
+ */
 type ScatterSeriesItem = [
   previousScore: number,
   currentScore: number,
   supervisionScore: number,
   growth: number,
   rank: string,
+  rawRow: Record<string, unknown>,
 ];
 
 function getTooltipParam(params: TooltipComponentFormatterCallbackParams) {
   return Array.isArray(params) ? params[0] : params;
 }
 
+/** Render a number nicely — keep strings as-is */
+function renderValue(val: unknown): string {
+  if (typeof val === "number" && Number.isFinite(val)) {
+    return formatNumber(val, 2);
+  }
+  return String(val ?? "");
+}
+
 function formatTooltip(params: TooltipComponentFormatterCallbackParams) {
   const item = getTooltipParam(params);
   const data = item.data as ScatterSeriesItem | undefined;
 
-  if (!data) {
-    return "";
-  }
+  if (!data) return "";
 
-  const [
-    previousScore,
-    currentScore,
-    supervisionScore,
-    growth,
-    rank,
-  ] = data;
+  const rank = data[4];
+  const rawRow = data[5] as Record<string, unknown> | undefined;
 
-  return `<div style="min-width:220px;direction:rtl;text-align:right">
-    <div style="font-weight:800;margin-bottom:8px;line-height:1.8">${rank}</div>
+  // Build rows from rawRow if available; otherwise fall back to the 4 known fields
+  const rows: Array<{ label: string; value: string }> = rawRow
+    ? Object.entries(rawRow)
+        .filter(([key]) => key !== "رده" && key !== "rank") // title already shown in header
+        .map(([key, val]) => ({ label: key, value: renderValue(val) }))
+    : [
+        { label: "میانگین نمره قبل", value: formatNumber(data[0], 2) },
+        { label: "میانگین نمره فعلی", value: formatNumber(data[1], 2) },
+        { label: "میانگین نظارت",     value: formatNumber(data[2], 2) },
+        { label: "رشد میانی",         value: formatNumber(data[3], 2) },
+      ];
 
-    <div style="display:flex;justify-content:space-between;gap:18px;margin-top:4px">
-      <span>میانگین نمره قبل</span>
-      <strong>${formatNumber(previousScore, 2)}</strong>
-    </div>
+  const rowsHtml = rows
+    .map(
+      ({ label, value }) =>
+        `<div style="display:flex;justify-content:space-between;gap:18px;margin-top:4px">
+          <span style="color:#94a3b8">${label}</span>
+          <strong>${value}</strong>
+        </div>`,
+    )
+    .join("");
 
-    <div style="display:flex;justify-content:space-between;gap:18px;margin-top:4px">
-      <span>میانگین نمره فعلی</span>
-      <strong>${formatNumber(currentScore, 2)}</strong>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;gap:18px;margin-top:4px">
-      <span>میانگین نظارت</span>
-      <strong>${formatNumber(supervisionScore, 2)}</strong>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;gap:18px;margin-top:4px">
-      <span>رشد میانی</span>
-      <strong>${formatNumber(growth, 2)}</strong>
-    </div>
+  return `<div style="min-width:240px;direction:rtl;text-align:right">
+    <div style="font-weight:800;margin-bottom:8px;line-height:1.8;border-bottom:1px solid rgba(148,163,184,0.2);padding-bottom:6px">${rank}</div>
+    ${rowsHtml}
   </div>`;
 }
 
@@ -72,12 +86,8 @@ const MIN_SCATTER_SYMBOL_SIZE = 7;
 const MAX_SCATTER_SYMBOL_SIZE = 54;
 
 function getGrowthFromSeriesValue(value: unknown) {
-  if (!Array.isArray(value)) {
-    return null;
-  }
-
+  if (!Array.isArray(value)) return null;
   const growth = Number(value[3]);
-
   return Number.isFinite(growth) ? growth : null;
 }
 
@@ -88,9 +98,7 @@ function createScatterSymbolSizeFormatter(
   return (value: unknown) => {
     const growth = getGrowthFromSeriesValue(value);
 
-    if (growth === null) {
-      return MIN_SCATTER_SYMBOL_SIZE;
-    }
+    if (growth === null) return MIN_SCATTER_SYMBOL_SIZE;
 
     if (maxGrowth === minGrowth) {
       return (MIN_SCATTER_SYMBOL_SIZE + MAX_SCATTER_SYMBOL_SIZE) / 2;
@@ -131,6 +139,7 @@ export function EnterpriseScatterChart({
         item.supervisionScore,
         item.growth,
         item.rank,
+        item.rawRow ?? {},
       ]),
     [data],
   );
@@ -140,12 +149,7 @@ export function EnterpriseScatterChart({
       .map((item) => item[3])
       .filter((growth) => Number.isFinite(growth));
 
-    if (!growthValues.length) {
-      return {
-        minGrowth: 0,
-        maxGrowth: 0,
-      };
-    }
+    if (!growthValues.length) return { minGrowth: 0, maxGrowth: 0 };
 
     return {
       minGrowth: Math.min(...growthValues),
@@ -161,6 +165,7 @@ export function EnterpriseScatterChart({
       ),
     [growthRange],
   );
+
   const option: EChartsOption = useMemo(
     () => ({
       color: [palette.primary],
@@ -199,10 +204,7 @@ export function EnterpriseScatterChart({
           formatter: (value: number) => formatNumber(value, 0),
         },
         splitLine: {
-          lineStyle: {
-            color: palette.grid,
-            type: "dashed",
-          },
+          lineStyle: { color: palette.grid, type: "dashed" },
         },
       },
       yAxis: {
@@ -219,10 +221,7 @@ export function EnterpriseScatterChart({
           formatter: (value: number) => formatNumber(value, 0),
         },
         splitLine: {
-          lineStyle: {
-            color: palette.grid,
-            type: "dashed",
-          },
+          lineStyle: { color: palette.grid, type: "dashed" },
         },
       },
       series: [
@@ -248,13 +247,7 @@ export function EnterpriseScatterChart({
         },
       ],
     }),
-        [
-      palette,
-      scatterSymbolSize,
-      seriesData,
-      xAxisName,
-      yAxisName,
-    ],
+    [palette, scatterSymbolSize, seriesData, xAxisName, yAxisName],
   );
 
   return (
