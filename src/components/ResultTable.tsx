@@ -151,6 +151,7 @@ function TableView({ table, mode = 'inline' }: TableViewProps) {
       <table className="data-table">
         <thead>
           <tr>
+            <th style={{ minWidth: '52px', width: '52px', textAlign: 'center' }}>ردیف</th>
             {table.columns.map((column) => (
               <th key={column} title={column}>
                 {formatColumnName(column)}
@@ -162,6 +163,9 @@ function TableView({ table, mode = 'inline' }: TableViewProps) {
         <tbody>
           {table.rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
+              <td style={{ textAlign: 'center', color: '#8a98ad', fontWeight: 700, minWidth: '52px', width: '52px' }}>
+                {rowIndex + 1}
+              </td>
               {table.columns.map((column) => {
                 const formattedValue = formatCellValue(row[column], column);
 
