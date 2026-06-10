@@ -151,7 +151,7 @@ function TableView({ table, mode = 'inline' }: TableViewProps) {
       <table className="data-table">
         <thead>
           <tr>
-            <th style={{ minWidth: '52px', width: '52px', textAlign: 'center' }}>ردیف</th>
+            <th style={{ minWidth: '68px', width: '68px', textAlign: 'center', padding: '0 12px' }}>ردیف</th>
             {table.columns.map((column) => (
               <th key={column} title={column}>
                 {formatColumnName(column)}
@@ -163,7 +163,7 @@ function TableView({ table, mode = 'inline' }: TableViewProps) {
         <tbody>
           {table.rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              <td style={{ textAlign: 'center', color: '#8a98ad', fontWeight: 700, minWidth: '52px', width: '52px' }}>
+              <td style={{ textAlign: 'center', color: '#8a98ad', fontWeight: 700, minWidth: '68px', width: '68px', padding: '0 12px' }}>
                 {rowIndex + 1}
               </td>
               {table.columns.map((column) => {

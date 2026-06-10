@@ -207,14 +207,14 @@ export function EnterpriseBarChart({
           {
             name: seriesName,
             type: "bar",
-            barWidth: "38%",
-            barMaxWidth: 24,
+            barWidth: 18,
+            barCategoryGap: "60%",
             barMinHeight: 4,
             emphasis: {
               focus: "series",
             },
             itemStyle: {
-              borderRadius: [6, 14, 14, 6],
+              borderRadius: [4, 10, 10, 4],
               color: {
                 type: "linear",
                 x: 0,
