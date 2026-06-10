@@ -22,38 +22,69 @@ export function SystemSelectionPage() {
         </header>
 
         <div className="system-selection-grid">
-          {APP_SYSTEMS.map((system) => (
-            <button
-              key={system.id}
-              type="button"
-              className={`system-selection-card ${system.themeClass}`}
-              aria-label={`ورود به ${system.selectionTitle}`}
-              onClick={() => {
-                setSystem(system.id);
-                // After system selection, go directly to chat
-                navigate('/chat', { replace: true });
-              }}
-            >
-              <div className="system-selection-card-visual">
-                <img
-                  src={system.coverImageSrc}
-                  alt={system.selectionTitle}
-                  onError={(event) => {
-                    event.currentTarget.style.display = 'none';
-                  }}
-                />
-                <span className="system-selection-card-fallback">
-                  {system.selectionTitle}
-                </span>
-              </div>
+          <div className="system-selection-apex" aria-hidden="true">
+            <div className="system-selection-apex-circle">
+              <img
+                src="/brand/company-logo.png"
+                alt=""
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          </div>
 
-              <div className="system-selection-card-content">
-                <h2>{system.selectionTitle}</h2>
-                <p>{system.selectionDescription}</p>
-                <span className="system-selection-card-action">ورود به سامانه</span>
-              </div>
-            </button>
-          ))}
+          <div className="system-selection-bottom-row">
+            <svg
+              className="system-selection-connector"
+              viewBox="0 0 100 42"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M50 2 L18 40"
+                stroke="rgba(37,196,157,0.22)"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+                fill="none"
+              />
+              <path
+                d="M50 2 L82 40"
+                stroke="rgba(92,139,255,0.22)"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+                fill="none"
+              />
+            </svg>
+
+            {APP_SYSTEMS.map((system) => (
+              <button
+                key={system.id}
+                type="button"
+                className={`system-selection-card ${system.themeClass}`}
+                aria-label={`ورود به ${system.selectionTitle}`}
+                onClick={() => {
+                  setSystem(system.id);
+                  navigate('/chat', { replace: true });
+                }}
+              >
+                <div className="system-selection-card-visual">
+                  <img
+                    src={system.coverImageSrc}
+                    alt={system.selectionTitle}
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+
+                <div className="system-selection-card-content">
+                  <h2>{system.selectionTitle}</h2>
+                  <span className="system-selection-card-action">ورود</span>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
     </main>
