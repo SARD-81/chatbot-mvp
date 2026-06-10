@@ -14,8 +14,8 @@ type EnterpriseBarChartProps = EnterpriseChartProps & {
 const HORIZONTAL_VISIBLE_ROWS = 10;
 const ROW_HEIGHT_PX = 56;
 const CHART_VERTICAL_PADDING_PX = 80;
-const LABEL_AREA_WIDTH = 260;
-const GRID_LEFT = LABEL_AREA_WIDTH + 20;
+const LABEL_AREA_WIDTH = 180;
+const GRID_LEFT = LABEL_AREA_WIDTH + 2;
 
 function normalizeCategoryLabel(value: string) {
   return value.trim().replace(/\s+/g, " ");
@@ -183,7 +183,7 @@ export function EnterpriseBarChart({
             align: "right",
             overflow: "break",
             width: LABEL_AREA_WIDTH,
-            lineHeight: 22,
+            lineHeight: 13,
             formatter: formatScrollableCategoryAxisLabel,
           },
         },
