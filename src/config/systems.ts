@@ -1,4 +1,4 @@
-export type AppSystemId = 'vakav' | 'dataYar';
+export type AppSystemId = 'vakav' | 'dataYar' | 'docManagement';
 
 export type AppSystemConfig = {
   id: AppSystemId;
@@ -12,6 +12,7 @@ export type AppSystemConfig = {
   selectionDescription: string;
   coverImageSrc: string;
   themeClass: string;
+  externalUrl?: string;
 };
 
 export const DEFAULT_SYSTEM_ID: AppSystemId = 'vakav';
@@ -58,7 +59,22 @@ const DATA_YAR_SYSTEM: AppSystemConfig = {
   ],
 };
 
-export const APP_SYSTEMS: AppSystemConfig[] = [VAKAV_SYSTEM, DATA_YAR_SYSTEM];
+const DOC_MANAGEMENT_SYSTEM: AppSystemConfig = {
+  id: 'docManagement',
+  name: 'سامانه مدیریت هوشمند اسناد',
+  subtitle: 'مدیریت، جستجو و بایگانی هوشمند اسناد سازمانی.',
+  apiBaseUrl: '',
+  logoSrc: '/brand/company-logo.png',
+  secondaryLogoSrc: '/brand/company-logo2.png',
+  selectionTitle: 'مدیریت هوشمند اسناد',
+  selectionDescription: 'سامانه بایگانی، جستجو و مدیریت هوشمند اسناد سازمانی.',
+  coverImageSrc: '/brand/system-doc-management.png',
+  themeClass: 'system-theme-doc-management',
+  externalUrl: 'http://172.16.16.184:8000/',
+  suggestedPrompts: [],
+};
+
+export const APP_SYSTEMS: AppSystemConfig[] = [VAKAV_SYSTEM, DATA_YAR_SYSTEM, DOC_MANAGEMENT_SYSTEM];
 
 export function isAppSystemId(value: string): value is AppSystemId {
   return APP_SYSTEMS.some((system) => system.id === value);
