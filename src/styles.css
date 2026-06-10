@@ -469,7 +469,7 @@ button {
   position: relative;
   z-index: 2;
   width: min(460px, 100%);
-  height: min(460px, 100%);
+  height: min(520px, 100%);
   max-height: calc(100svh - 140px);
   display: flex;
   flex-direction: column;
@@ -2276,7 +2276,7 @@ button {
   --login-logo-primary-scale: 0.8;
   --login-logo-secondary-scale: 2;
   --login-logo-primary-y: 0px;
-  --login-logo-secondary-y: 0px;
+  --login-logo-secondary-y: 34px;
 
   display: flex;
   align-items: flex-end;
