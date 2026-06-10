@@ -14,6 +14,13 @@ export function SystemSelectionPage() {
 
   const chatSystems = APP_SYSTEMS.filter((s) => !s.externalUrl);
   const externalSystems = APP_SYSTEMS.filter((s) => s.externalUrl);
+  const allSystems = [...chatSystems, ...externalSystems];
+  const cardCount = allSystems.length;
+
+  // Evenly-spaced x positions for N cards (0 = leftmost, 1 = rightmost)
+  const cardPositions = allSystems.map((_, i) =>
+    cardCount === 1 ? 0.5 : i / (cardCount - 1)
+  );
 
   return (
     <main className="system-selection-page">
@@ -38,19 +45,30 @@ export function SystemSelectionPage() {
             </div>
           </div>
 
-          {/* Bottom row — all three system cards */}
-          <div className="system-selection-bottom-row">
+          {/* Connector lines from apex to cards */}
+          <div className="system-selection-connector-wrap" aria-hidden="true">
             <svg
-              className="system-selection-connector"
-              viewBox="0 0 100 42"
+              viewBox="0 0 100 100"
               preserveAspectRatio="none"
-              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M50 2 L10 40" stroke="rgba(37,196,157,0.22)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
-              <path d="M50 2 L50 40" stroke="rgba(180,120,255,0.22)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
-              <path d="M50 2 L90 40" stroke="rgba(92,139,255,0.22)" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
+              {cardPositions.map((pos, i) => (
+                <line
+                  key={i}
+                  x1="50"
+                  y1="0"
+                  x2={pos * 100}
+                  y2="100"
+                  stroke="rgba(37,196,157,0.25)"
+                  strokeWidth="1.5"
+                  strokeDasharray="5 4"
+                />
+              ))}
             </svg>
+          </div>
 
+          {/* Cards row */}
+          <div className="system-selection-bottom-row">
             {/* Chat systems */}
             {chatSystems.map((system) => (
               <button
