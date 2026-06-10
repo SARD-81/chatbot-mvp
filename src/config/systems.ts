@@ -28,7 +28,7 @@ const VAKAV_SYSTEM: AppSystemConfig = {
   secondaryLogoSrc: '/brand/company-logo2.png',
   selectionTitle: 'سامانه واکاو',
   selectionDescription: 'دستیار تحلیلی برای پرسش، گزارش‌گیری و مشاهده نمودارهای مدیریتی.',
-  coverImageSrc: 'https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/2a58b704-e6ec-4524-a68a-be81fc63e0c9.png',
+  coverImageSrc: '/brand/system-vakav.png',
   themeClass: 'system-theme-vakav',
   suggestedPrompts: [
     'نمرات دوره فعلی رو به تفکیک تاریخ برام میانگین بگیر.',
@@ -48,7 +48,7 @@ const DATA_YAR_SYSTEM: AppSystemConfig = {
   secondaryLogoSrc: '/brand/company-logo2.png',
   selectionTitle: 'سامانه جیراکاو',
   selectionDescription: 'دستیار تحلیلی جیرا برای پرسش از تسک‌ها، وضعیت‌ها، ارجاع‌ها و گزارش‌های تیمی.',
-  coverImageSrc: 'https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/098323be-1b8a-46a2-87a8-5611a80282e2.png',
+  coverImageSrc: '/brand/system-data-yar.png',
   themeClass: 'system-theme-data-yar',
   suggestedPrompts: [
     '«سید امیررضا داورزنی» چند تسک در وضعیت انجام شده (Done) و چند تسک In Progress دارد؟',
