@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bot, Lock, UserRound } from "lucide-react";
+import { Lock, UserRound } from "lucide-react";
 import { login, isAuthenticated } from "../utils/storage";
 import { APP_VERSION } from "../config/app";
 
@@ -16,7 +16,6 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // If already authenticated, skip to systems page
   useEffect(() => {
     if (isAuthenticated()) {
       navigate("/systems", { replace: true });
@@ -46,9 +45,7 @@ export function LoginPage() {
         <div className="login-panel">
           <div className="login-header">
             <h2>ورود به سامانه</h2>
-            <p>
-              برای ادامه، نام کاربری و رمز عبور خود را وارد کنید.
-            </p>
+            <p>برای ادامه، نام کاربری و رمز عبور خود را وارد کنید.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
@@ -100,13 +97,22 @@ export function LoginPage() {
           <div className="login-glow login-glow-two" />
 
           <div className="brand-card">
-            <div>
-              <div className="brand-icon">
-                <Bot size={34} />
-              </div>
-              <p className="eyebrow">{BRAND_EYEBROW}</p>
+            <div className="login-company-brand">
+              <img
+                src="/brand/company-logo.png"
+                alt={BRAND_NAME}
+                className="login-company-logo"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+              <img
+                src="/brand/company-logo2.png"
+                alt={BRAND_NAME}
+                className="login-company-logo-b"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
             </div>
 
+            <p className="eyebrow">{BRAND_EYEBROW}</p>
             <h1>{BRAND_NAME}</h1>
             <p>{BRAND_SUBTITLE}</p>
           </div>
