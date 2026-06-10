@@ -1,0 +1,79 @@
+/*
+ * =========================================================
+ *  brand-config.css — تنظیمات مستقل لوگوهای برند
+ * =========================================================
+ *
+ *  فقط همین فایل را ویرایش کن تا اندازه، موقعیت و
+ *  سایر تنظیمات بصری هر لوگو را تغییر دهی.
+ *
+ *  لوگو اول  → company-logo.png  → کلاس: .login-company-logo
+ *  لوگو دوم  → company-logo2.png → کلاس: .login-company-logo-b
+ * =========================================================
+ */
+
+/* ─────────────────────────────────────────────────────────
+   متغیرهای لوگو اول (company-logo.png)
+───────────────────────────────────────────────────────── */
+:root {
+  --logo-a-height:     68px;   /* ارتفاع لوگو */
+  --logo-a-max-width:  220px;  /* حداکثر عرض */
+  --logo-a-opacity:    1;      /* شفافیت: 0 تا 1 */
+  --logo-a-scale:      1;      /* بزرگنمایی: مثلاً 1.1 یا 0.9 */
+  --logo-a-offset-y:   0px;    /* جابجایی عمودی: مثبت = پایین، منفی = بالا */
+  --logo-a-offset-x:   0px;    /* جابجایی افقی: مثبت = چپ، منفی = راست */
+}
+
+/* ─────────────────────────────────────────────────────────
+   متغیرهای لوگو دوم (company-logo2.png)
+───────────────────────────────────────────────────────── */
+:root {
+  --logo-b-height:     48px;   /* ارتفاع لوگو */
+  --logo-b-max-width:  180px;  /* حداکثر عرض */
+  --logo-b-opacity:    0.72;   /* شفافیت: 0 تا 1 */
+  --logo-b-scale:      1;      /* بزرگنمایی */
+  --logo-b-offset-y:   0px;    /* جابجایی عمودی */
+  --logo-b-offset-x:   0px;    /* جابجایی افقی */
+}
+
+/* ─────────────────────────────────────────────────────────
+   اعمال متغیرها روی کلاس‌های لوگو
+   (این بخش را ویرایش نکن — فقط متغیرهای بالا را تغییر بده)
+───────────────────────────────────────────────────────── */
+.login-company-logo {
+  height: var(--logo-a-height);
+  max-width: var(--logo-a-max-width);
+  opacity: var(--logo-a-opacity);
+  transform:
+    translateY(var(--logo-a-offset-y))
+    translateX(var(--logo-a-offset-x))
+    scale(var(--logo-a-scale));
+  transform-origin: center center;
+}
+
+.login-company-logo-b {
+  height: var(--logo-b-height);
+  max-width: var(--logo-b-max-width);
+  opacity: var(--logo-b-opacity);
+  transform:
+    translateY(var(--logo-b-offset-y))
+    translateX(var(--logo-b-offset-x))
+    scale(var(--logo-b-scale));
+  transform-origin: center center;
+}
+
+/* ─────────────────────────────────────────────────────────
+   ریسپانسیو — اگر خواستی مقادیر موبایل را جدا تنظیم کن
+───────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  :root {
+    --logo-a-height:    56px;
+    --logo-b-height:    40px;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --logo-a-height:    46px;
+    --logo-b-height:    32px;
+  }
+}
