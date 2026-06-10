@@ -585,6 +585,34 @@ button {
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+/* Company logo / brand area inside the login visual card */
+.login-company-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.login-company-logo {
+  width: auto;
+  height: clamp(52px, 8vh, 72px);
+  max-width: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 18px rgba(37, 196, 157, 0.22));
+}
+
+.login-company-logo-b {
+  width: auto;
+  height: clamp(36px, 5vh, 52px);
+  max-width: 180px;
+  object-fit: contain;
+  opacity: 0.72;
+  filter: drop-shadow(0 4px 10px rgba(92, 139, 255, 0.18));
+}
+
+/* Fallback icon shown when logo images fail to load */
 .brand-icon {
   width: 76px;
   height: 76px;
@@ -1791,39 +1819,55 @@ button {
   .login-visual {
     order: 1;
     min-height: 360px;
-    padding: 32px;
+    padding: 36px 28px;
   }
 
-  .login-company-brand {
-    gap: 14px;
+  .brand-card {
+    height: auto;
+    max-height: none;
+    gap: 22px;
+    padding: 28px 24px;
   }
 
-  .login-company-logo,
+  .login-company-logo {
+    height: clamp(44px, 7vh, 60px);
+  }
+
   .login-company-logo-b {
-    width: 72px;
-    height: 72px;
-    max-width: 72px;
-    max-height: 72px;
+    height: clamp(30px, 4vh, 44px);
+  }
+}
+
+@media (max-width: 560px) {
+  .login-visual {
+    min-height: 280px;
+    padding: 28px 20px;
   }
 
-  .chat-shell {
-    width: 100%;
-    height: calc(100vh - 24px);
-    border-radius: 24px;
+  .brand-card {
+    gap: 16px;
+    padding: 22px 18px;
+  }
+
+  .brand-card h1 {
+    font-size: clamp(26px, 7vw, 38px);
   }
 
   .chat-header {
-    flex-wrap: wrap;
     padding: 14px 16px;
+    gap: 10px;
   }
 
-  .chat-header-actions {
-    flex-wrap: wrap;
-    gap: 8px;
+  .chat-brand h1 {
+    font-size: 15px;
+  }
+
+  .chat-brand p {
+    display: none;
   }
 
   .chat-footer {
-    padding: 12px 14px 16px;
+    padding: 12px 14px 18px;
   }
 
   .prompt-list {
