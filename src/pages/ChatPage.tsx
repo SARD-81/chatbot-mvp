@@ -200,7 +200,15 @@ export function ChatPage() {
                 <Sparkles size={34} />
               </div>
               <h2>از {activeSystem.name} بپرسید</h2>
-              <p>پرسش آماده را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.</p>
+              <div className="prompt-intro-card">
+                <span className="prompt-intro-icon" aria-hidden="true">
+                  <Sparkles size={19} />
+                </span>
+                <span className="prompt-intro-copy">
+                  <strong>شروع سریع با پرسش‌های آماده</strong>
+                  <span>یکی از سناریوهای پیشنهادی را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.</span>
+                </span>
+              </div>
               {hasSuggestedPrompts && <span className="prompt-section-label">پرسش‌های پیشنهادی</span>}
               {hasSuggestedPrompts && (
                 <div className="prompt-command-grid">
