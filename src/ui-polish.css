@@ -135,3 +135,126 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (max-width: 520px) { .chat-header-actions { flex-wrap: wrap; } .change-system-button, .logout-button { flex: 1 1 auto; } .system-selection-header h1 { font-size: 30px; } .system-selection-apex-circle { width: 82px; height: 82px; } .system-selection-connector-wrap { display: none; } .system-selection-card { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
 @keyframes ep-message-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+/* Vakav suggested prompts: compact enterprise command panel */
+.empty-chat-state {
+  justify-content: flex-start;
+  padding: clamp(18px, 3vh, 28px) 24px 112px;
+  overflow: hidden;
+}
+
+.empty-chat-state > p:not(.empty-chat-kicker) {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.prompt-section-label {
+  margin-top: 18px;
+  min-height: 30px;
+  padding: 0 13px;
+  font-size: 12px;
+}
+
+.prompt-list {
+  width: min(1080px, 100%);
+  max-height: min(42vh, 390px);
+  margin-top: 14px;
+  padding: 4px 4px 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+}
+
+.prompt-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.prompt-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.28);
+}
+
+.prompt-list button {
+  min-height: 92px;
+  height: auto;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 16px 18px 16px 20px;
+  border-radius: 22px;
+  text-align: right;
+  line-height: 1.85;
+  font-size: 13.5px;
+  font-weight: 850;
+  color: #243044;
+  overflow: hidden;
+}
+
+.prompt-list button::before {
+  width: 9px;
+  height: 9px;
+  margin-inline-end: 0;
+  margin-inline-start: 8px;
+  box-shadow: 0 0 0 6px rgba(37, 196, 157, 0.1);
+}
+
+.prompt-list button {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.prompt-list button:hover {
+  transform: translateY(-3px);
+  border-color: rgba(37, 196, 157, 0.34);
+  background:
+    radial-gradient(circle at 92% 24%, rgba(37, 196, 157, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 252, 255, 0.74));
+}
+
+.chat-footer {
+  position: relative;
+  z-index: 5;
+}
+
+.chat-composer {
+  width: min(1080px, 100%);
+}
+
+@media (min-width: 1280px) {
+  .prompt-list {
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .prompt-list {
+    max-height: 40vh;
+    grid-template-columns: 1fr;
+  }
+
+  .prompt-list button {
+    min-height: 82px;
+    font-size: 13px;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+}
+
+@media (max-height: 760px) {
+  .empty-chat-state {
+    padding-top: 14px;
+  }
+
+  .empty-chat-kicker,
+  .empty-chat-icon,
+  .empty-chat-state h2 {
+    display: none;
+  }
+
+  .prompt-list {
+    max-height: 46vh;
+  }
+}

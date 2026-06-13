@@ -135,7 +135,7 @@ export function ChatPage() {
                 <span className="chat-system-pill">{activeSystem.selectionTitle}</span>
                 <span className="chat-status-pill">
                   <span className="chat-status-dot" aria-hidden="true" />
-                  جلسه فعال
+                  سامانه فعال
                 </span>
               </div>
             </div>
