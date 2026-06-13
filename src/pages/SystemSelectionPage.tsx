@@ -17,9 +17,8 @@ export function SystemSelectionPage() {
   const allSystems = [...chatSystems, ...externalSystems];
   const cardCount = allSystems.length;
 
-  // Evenly-spaced x positions for N cards (0 = leftmost, 1 = rightmost)
   const cardPositions = allSystems.map((_, i) =>
-    cardCount === 1 ? 0.5 : i / (cardCount - 1)
+    cardCount === 1 ? 0.5 : i / (cardCount - 1),
   );
 
   return (
@@ -28,11 +27,10 @@ export function SystemSelectionPage() {
         <header className="system-selection-header">
           <p className="system-selection-eyebrow">انتخاب سامانه</p>
           <h1>به کدام سامانه می‌خواهید وارد شوید؟</h1>
-          <p>برای ادامه، یکی از سامانه‌های زیر را انتخاب کنید.</p>
+          <p>یک فضای کاری را انتخاب کنید تا تجربه، رنگ‌بندی و مسیر API همان سامانه فعال شود.</p>
         </header>
 
         <div className="system-selection-grid">
-          {/* Top apex — brand logo */}
           <div className="system-selection-apex" aria-hidden="true">
             <div className="system-selection-apex-circle">
               <img
@@ -45,7 +43,6 @@ export function SystemSelectionPage() {
             </div>
           </div>
 
-          {/* Connector lines from apex to cards */}
           <div className="system-selection-connector-wrap" aria-hidden="true">
             <svg
               viewBox="0 0 100 100"
@@ -67,9 +64,7 @@ export function SystemSelectionPage() {
             </svg>
           </div>
 
-          {/* Cards row */}
           <div className="system-selection-bottom-row">
-            {/* Chat systems */}
             {chatSystems.map((system) => (
               <button
                 key={system.id}
@@ -92,12 +87,12 @@ export function SystemSelectionPage() {
                 </div>
                 <div className="system-selection-card-content">
                   <h2>{system.selectionTitle}</h2>
-                  {/* <span className="system-selection-card-action">ورود</span> */}
+                  <p>{system.selectionDescription}</p>
+                  <span className="system-selection-card-action">ورود به سامانه</span>
                 </div>
               </button>
             ))}
 
-            {/* External systems */}
             {externalSystems.map((system) => (
               <a
                 key={system.id}
@@ -118,7 +113,8 @@ export function SystemSelectionPage() {
                 </div>
                 <div className="system-selection-card-content">
                   <h2>{system.selectionTitle}</h2>
-                  {/* <span className="system-selection-card-action">ورود</span> */}
+                  <p>{system.selectionDescription}</p>
+                  <span className="system-selection-card-action">باز کردن سامانه</span>
                 </div>
               </a>
             ))}
