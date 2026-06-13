@@ -195,21 +195,21 @@ export function ChatPage() {
         <div className="chat-body">
           {!hasMessages && (
             <div className="empty-chat-state">
-              <p className="empty-chat-kicker">دستیار تحلیلی سازمانی</p>
+              {/* <p className="empty-chat-kicker">دستیار تحلیلی سازمانی</p> */}
               <div className="empty-chat-icon">
                 <Sparkles size={34} />
               </div>
               <h2>از {activeSystem.name} بپرسید</h2>
               <div className="prompt-intro-card">
                 <span className="prompt-intro-icon" aria-hidden="true">
-                  <Sparkles size={19} />
+                  {/* <Sparkles size={19} /> */}
                 </span>
                 <span className="prompt-intro-copy">
-                  <strong>شروع سریع با پرسش‌های آماده</strong>
-                  <span>یکی از سناریوهای پیشنهادی را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.</span>
+                  {/* <strong>شروع سریع با پرسش‌های آماده</strong> */}
+                  {/* <span>یکی از سناریوهای پیشنهادی را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.</span> */}
                 </span>
               </div>
-              {hasSuggestedPrompts && <span className="prompt-section-label">پرسش‌های پیشنهادی</span>}
+              {/* {hasSuggestedPrompts && <span className="prompt-section-label">پرسش‌های پیشنهادی</span>} */}
               {hasSuggestedPrompts && (
                 <div className="prompt-command-grid">
                   {activeSystem.suggestedPrompts.map((prompt, index) => {
