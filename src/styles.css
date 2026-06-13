@@ -2106,3 +2106,25 @@ button {
   color: #4f46e5;
   border-color: rgba(79, 70, 229, 0.24);
 }
+
+
+.system-selection-header .system-selection-eyebrow,
+.system-selection-header p:not(.system-selection-eyebrow),
+.system-selection-card-action {
+  display: none;
+}
+
+.system-selection-card {
+  width: clamp(220px, 24vw, 292px);
+  height: clamp(220px, 24vw, 292px);
+  min-height: 0;
+  border-radius: 46% 54% 49% 51% / 53% 45% 55% 47%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.system-selection-card:hover {
+  border-radius: 50% 46% 53% 47% / 48% 52% 45% 55%;
+  transform: translateY(-10px) scale(1.025);
+}

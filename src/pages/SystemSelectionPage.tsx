@@ -25,9 +25,9 @@ export function SystemSelectionPage() {
     <main className="system-selection-page">
       <section className="system-selection-shell">
         <header className="system-selection-header">
-          <p className="system-selection-eyebrow">انتخاب سامانه</p>
+          {/* <p className="system-selection-eyebrow">انتخاب سامانه</p> */}
           <h1>به کدام سامانه می‌خواهید وارد شوید؟</h1>
-          <p>یک فضای کاری را انتخاب کنید تا تجربه، رنگ‌بندی و مسیر API همان سامانه فعال شود.</p>
+          {/* <p>یک فضای کاری را انتخاب کنید تا تجربه، رنگ‌بندی و مسیر API همان سامانه فعال شود.</p> */}
         </header>
 
         <div className="system-selection-grid">
@@ -88,7 +88,7 @@ export function SystemSelectionPage() {
                 <div className="system-selection-card-content">
                   <h2>{system.selectionTitle}</h2>
                   <p>{system.selectionDescription}</p>
-                  <span className="system-selection-card-action">ورود به سامانه</span>
+                  {/* <span className="system-selection-card-action">ورود به سامانه</span> */}
                 </div>
               </button>
             ))}
@@ -114,7 +114,7 @@ export function SystemSelectionPage() {
                 <div className="system-selection-card-content">
                   <h2>{system.selectionTitle}</h2>
                   <p>{system.selectionDescription}</p>
-                  <span className="system-selection-card-action">باز کردن سامانه</span>
+                  {/* <span className="system-selection-card-action">باز کردن سامانه</span> */}
                 </div>
               </a>
             ))}
