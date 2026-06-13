@@ -58,12 +58,12 @@ export function BaseChart({
 
         <div className="enterprise-chart-actions">
           {onRefresh ? (
-            <button type="button" onClick={onRefresh}>
+            <button type="button" className="table-action-button" onClick={onRefresh}>
               بروزرسانی
             </button>
           ) : null}
 
-          <button type="button" onClick={downloadImage}>
+          <button type="button" className="table-download-button" onClick={downloadImage}>
             PNG
           </button>
         </div>
