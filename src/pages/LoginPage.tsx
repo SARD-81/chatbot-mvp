@@ -112,7 +112,7 @@ export function LoginPage() {
               />
             </div>
 
-            <p className="eyebrow">{BRAND_EYEBROW}</p>
+            {/* <p >{BRAND_EYEBROW}</p> */}
             <h1>{BRAND_NAME}</h1>
             <p>{BRAND_SUBTITLE}</p>
           </div>
