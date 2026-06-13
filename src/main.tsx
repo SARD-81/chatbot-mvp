@@ -4,9 +4,16 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { SystemProvider } from './contexts/SystemContext';
 import './styles.css';
-import './brand-config.css'; // تنظیمات مستقل لوگوها — فقط این فایل را ویرایش کن
+import './brand-config.css';
+import './ui-polish.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <SystemProvider>
