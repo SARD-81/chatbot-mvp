@@ -92,7 +92,7 @@ export function SystemSelectionPage() {
                 </div>
                 <div className="system-selection-card-content">
                   <h2>{system.selectionTitle}</h2>
-                  <span className="system-selection-card-action">ورود</span>
+                  {/* <span className="system-selection-card-action">ورود</span> */}
                 </div>
               </button>
             ))}
@@ -118,7 +118,7 @@ export function SystemSelectionPage() {
                 </div>
                 <div className="system-selection-card-content">
                   <h2>{system.selectionTitle}</h2>
-                  <span className="system-selection-card-action">ورود</span>
+                  {/* <span className="system-selection-card-action">ورود</span> */}
                 </div>
               </a>
             ))}

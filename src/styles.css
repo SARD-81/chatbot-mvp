@@ -1973,3 +1973,63 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.message-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 140, 160, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #243447;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(31, 41, 55, 0.08);
+  cursor: pointer;
+}
+
+.message-action-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(91, 141, 239, 0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(31, 41, 55, 0.12);
+}
+
+.message-action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(31, 41, 55, 0.08);
+}
+
+.message-action-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.message-action-btn.like:hover {
+  color: #0f9f6e;
+  border-color: rgba(15, 159, 110, 0.24);
+}
+
+.message-action-btn.dislike:hover {
+  color: #d9485f;
+  border-color: rgba(217, 72, 95, 0.24);
+}
+
+.message-action-btn.regenerate:hover {
+  color: #4f46e5;
+  border-color: rgba(79, 70, 229, 0.24);
+}

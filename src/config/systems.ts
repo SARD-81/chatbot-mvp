@@ -70,7 +70,7 @@ const DOC_MANAGEMENT_SYSTEM: AppSystemConfig = {
   selectionDescription: 'سامانه بایگانی، جستجو و مدیریت هوشمند اسناد سازمانی.',
   coverImageSrc: '/brand/system-dms.png',
   themeClass: 'system-theme-doc-management',
-  externalUrl: 'http://172.16.16.184:8000/',
+  externalUrl: 'http://172.16.16.184/',
   suggestedPrompts: [],
 };
 
