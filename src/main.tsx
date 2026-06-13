@@ -6,6 +6,7 @@ import { SystemProvider } from './contexts/SystemContext';
 import './styles.css';
 import './brand-config.css';
 import './ui-polish.css';
+import './enterprise-enhancements.css';
 
 const rootElement = document.getElementById('root');
 
