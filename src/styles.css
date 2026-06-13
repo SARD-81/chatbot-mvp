@@ -1583,8 +1583,14 @@ button {
   transform: translateY(-1px);
 }
 
+/* =========================
+   CSV Download button — shine sweep effect
+========================= */
+
 .table-download-button,
 .download-link {
+  position: relative;
+  overflow: hidden;
   color: #ffffff;
   background: linear-gradient(
     135deg,
@@ -1592,13 +1598,80 @@ button {
     var(--color-blue-soft)
   );
   border-color: transparent;
-  box-shadow: 0 12px 24px rgba(72, 214, 176, 0.18);
+  box-shadow:
+    0 0 0 0 transparent;
+  transition:
+    background 200ms ease-in,
+    box-shadow 200ms ease-in,
+    transform 200ms ease-in;
+}
+
+/* Shine streak pseudo-element */
+.table-download-button::before,
+.download-link::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 86%;
+  position: absolute;
+  top: 7%;
+  left: 0%;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 40px 20px rgba(255, 255, 255, 0.7);
+  transform: skewX(-20deg);
+  pointer-events: none;
 }
 
 .table-download-button:hover,
 .download-link:hover {
-  background: linear-gradient(135deg, #3fc8a4, #609cf2);
+  background: linear-gradient(135deg, #3cc8a2, #5a94f5);
   border-color: transparent;
+  box-shadow: 0 0 26px 4px rgba(72, 214, 176, 0.55);
+  transform: translateY(-1px);
+  transition:
+    background 200ms ease-out,
+    box-shadow 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+.table-download-button:hover::before,
+.download-link:hover::before {
+  animation: csv-shine 0.52s 0s linear;
+}
+
+.table-download-button:active,
+.download-link:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 200ms ease-in, transform 120ms ease-in;
+}
+
+@keyframes csv-shine {
+  from {
+    opacity: 0;
+    left: 0%;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    left: 110%;
+  }
+}
+
+/* DataYar theme: purple-cyan variant for download button */
+.chat-page.system-theme-data-yar .table-download-button,
+.chat-page.system-theme-data-yar .download-link {
+  background: linear-gradient(135deg, #06b6d4, #2563eb 54%, #7c3aed);
+  box-shadow: 0 0 0 0 transparent;
+}
+
+.chat-page.system-theme-data-yar .table-download-button:hover,
+.chat-page.system-theme-data-yar .download-link:hover {
+  background: linear-gradient(135deg, #0ea5cc, #1d56db 54%, #6b2dd4);
+  box-shadow: 0 0 26px 4px rgba(37, 99, 235, 0.5);
 }
 
 .sql-details {
