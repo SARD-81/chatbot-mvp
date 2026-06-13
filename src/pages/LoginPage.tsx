@@ -7,7 +7,6 @@ import { APP_VERSION } from "../config/app";
 
 const BRAND_NAME = "سامانه‌های هوشمند بهاران";
 const BRAND_SUBTITLE = "دستیار هوشمند تحلیل و پردازش اطلاعات سازمانی";
-const BRAND_EYEBROW = "هوش مصنوعی سازمانی";
 
 export function LoginPage() {
   const navigate = useNavigate();
