@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bot, LogOut, Sparkles } from 'lucide-react';
+import {
+  BarChart3,
+  Bot,
+  Calculator,
+  CalendarDays,
+  GitCompareArrows,
+  ListOrdered,
+  LogOut,
+  Search,
+  Sparkles,
+  TrendingUp,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { ChatInput } from '../components/ChatInput';
@@ -11,6 +22,29 @@ import type { ChatMessage } from '../types/chat';
 import { buildChartForPromptResponse } from '../utils/chatCharts';
 import { getUserFriendlyErrorMessage, logErrorForDebug } from '../utils/errorMessages';
 import { logout } from '../utils/storage';
+
+
+const fallbackPromptIcons = [Sparkles, Search, BarChart3];
+
+const promptIndexFormatter = new Intl.NumberFormat('fa-IR', {
+  minimumIntegerDigits: 2,
+  useGrouping: false,
+});
+
+function getSuggestedPromptIcon(prompt: string, index: number) {
+  if (prompt.includes('تاریخ')) return CalendarDays;
+
+  if (prompt.includes('مقایسه') || (prompt.includes('قبل') && prompt.includes('فعلی'))) {
+    return GitCompareArrows;
+  }
+
+  if (prompt.includes('رشد')) return TrendingUp;
+  if (prompt.includes('تراز')) return Calculator;
+  if (prompt.includes('رده')) return ListOrdered;
+  if (prompt.includes('نمره') || prompt.includes('میانگین')) return BarChart3;
+
+  return fallbackPromptIcons[index % fallbackPromptIcons.length];
+}
 
 export function ChatPage() {
   const navigate = useNavigate();
@@ -169,12 +203,31 @@ export function ChatPage() {
               <p>پرسش آماده را انتخاب کنید یا سؤال خودتان را در کادر پایین بنویسید.</p>
               {hasSuggestedPrompts && <span className="prompt-section-label">پرسش‌های پیشنهادی</span>}
               {hasSuggestedPrompts && (
-                <div className="prompt-list">
-                  {activeSystem.suggestedPrompts.map((prompt) => (
-                    <button key={prompt} type="button" onClick={() => setInputValue(prompt)}>
-                      {prompt}
-                    </button>
-                  ))}
+                <div className="prompt-command-grid">
+                  {activeSystem.suggestedPrompts.map((prompt, index) => {
+                    const PromptIcon = getSuggestedPromptIcon(prompt, index);
+                    const promptIndex = promptIndexFormatter.format(index + 1);
+
+                    return (
+                      <button
+                        key={prompt}
+                        type="button"
+                        className="prompt-command-card"
+                        title={prompt}
+                        aria-label={`انتخاب پرسش پیشنهادی ${promptIndex}`}
+                        onClick={() => setInputValue(prompt)}
+                      >
+                        <span className="prompt-command-icon" aria-hidden="true">
+                          <PromptIcon size={18} />
+                        </span>
+
+                        <span className="prompt-command-body">
+                          <span className="prompt-command-index">{promptIndex}</span>
+                          <span className="prompt-command-text">{prompt}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
