@@ -4,7 +4,11 @@ import type {
   TooltipComponentFormatterCallbackParams,
 } from "echarts";
 import { BaseChart } from "./BaseChart";
-import { useEnterpriseChartPalette, enterpriseTooltipCss } from "./chartTheme";
+import {
+  chartFontFamily,
+  useEnterpriseChartPalette,
+  enterpriseTooltipCss,
+} from "./chartTheme";
 import { formatNumber } from "./chartFormatters";
 import type { EnterpriseChartProps, PieChartPoint } from "./types";
 
@@ -19,6 +23,72 @@ type PieFormatterParam = {
   value?: unknown;
   percent?: unknown;
 };
+
+function normalizePieName(value: unknown) {
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/ي/g, "ی")
+    .replace(/ك/g, "ک");
+}
+
+function getSemanticPieColor(
+  name: unknown,
+  palette: ReturnType<typeof useEnterpriseChartPalette>
+) {
+  const normalizedName = normalizePieName(name);
+
+  if (normalizedName.includes("سبز") || normalizedName.includes("مطلوب")) {
+    return palette.success;
+  }
+
+  if (
+    normalizedName.includes("زرد") ||
+    normalizedName.includes("نیاز به بهبود") ||
+    normalizedName.includes("بهبود")
+  ) {
+    return palette.warning;
+  }
+
+  if (
+    normalizedName.includes("قرمز") ||
+    normalizedName.includes("بحرانی") ||
+    normalizedName.includes("نامطلوب")
+  ) {
+    return palette.danger;
+  }
+
+  if (
+    normalizedName.includes("نامشخص") ||
+    normalizedName.includes("نامعلوم") ||
+    normalizedName.includes("بدون وضعیت")
+  ) {
+    return "#64748b";
+  }
+
+  return undefined;
+}
+
+function applySemanticPieColors(
+  data: PieChartPoint[],
+  palette: ReturnType<typeof useEnterpriseChartPalette>
+): PieChartPoint[] {
+  return data.map((item) => {
+    const semanticColor = getSemanticPieColor(item.name, palette);
+
+    if (!semanticColor) {
+      return item;
+    }
+
+    return {
+      ...item,
+      itemStyle: {
+        ...item.itemStyle,
+        color: semanticColor,
+      },
+    };
+  });
+}
 
 function buildDisplayPieData(data: PieChartPoint[]): PieChartPoint[] {
   if (data.length <= 10) {
@@ -94,7 +164,10 @@ export function EnterprisePieChart({
   className,
 }: EnterprisePieChartProps) {
   const palette = useEnterpriseChartPalette();
-  const displayData = useMemo(() => buildDisplayPieData(data), [data]);
+  const displayData = useMemo(
+    () => applySemanticPieColors(buildDisplayPieData(data), palette),
+    [data, palette]
+  );
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -118,6 +191,7 @@ export function EnterprisePieChart({
         textStyle: {
           color: palette.foreground,
           fontSize: 12,
+          fontFamily: chartFontFamily,
         },
         formatter: (params) => {
           const item = getPieTooltipParam(params) as PieFormatterParam;
@@ -125,7 +199,7 @@ export function EnterprisePieChart({
           const value = formatNumber(getPieValue(item), 0);
           const percent = formatNumber(getPiePercent(item), 2);
 
-          return `<div style="min-width:170px;direction:rtl;text-align:right">
+          return `<div style="min-width:170px;direction:rtl;text-align:right;font-family:${chartFontFamily}">
             <div style="font-weight:700;margin-bottom:6px;line-height:1.8">${name}</div>
             <div style="display:flex;justify-content:space-between;gap:16px">
               <span>تعداد</span><strong>${value}${unit ? ` ${unit}` : ""}</strong>
@@ -145,6 +219,7 @@ export function EnterprisePieChart({
         textStyle: {
           color: palette.mutedForeground,
           fontSize: 11,
+          fontFamily: chartFontFamily,
         },
       },
       series: [
@@ -164,6 +239,7 @@ export function EnterprisePieChart({
             show: true,
             color: palette.foreground,
             fontSize: 11,
+            fontFamily: chartFontFamily,
             formatter: (params) => {
               const item = params as PieFormatterParam;
               const name = getPieName(item);
