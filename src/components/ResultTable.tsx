@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Download, Maximize2, X } from 'lucide-react';
 import type { ChatMetadata, ChatTable } from '../types/api';
 import { getDownloadUrl } from '../lib/api';
@@ -265,68 +266,67 @@ const isMediumTable = columnCount <= 8 && rowCount <= 12;
         </div>
       </div>
 
-      {isModalOpen && (
-        <div
-          className="table-modal-backdrop"
-          role="presentation"
-          onMouseDown={() => setIsModalOpen(false)}
-        >
-          <section
-  className={[
-    'table-modal',
-    isCompactTable ? 'table-modal-compact' : '',
-    isMediumTable && !isCompactTable ? 'table-modal-medium' : '',
-  ]
-    .filter(Boolean)
-    .join(' ')}
-  role="dialog"
-  aria-modal="true"
-  aria-label="بزرگنمایی جدول"
-  onMouseDown={(event) => event.stopPropagation()}
->
-            <header className="table-modal-header">
-              <div>
-                <h2>بزرگنمایی جدول</h2>
-                <p>
-                  نمایش {visibleRowsCount.toLocaleString('fa-IR')} ردیف از{' '}
-                  {totalRowsCount.toLocaleString('fa-IR')} رکورد
-                </p>
-              </div>
+      {isModalOpen &&
+        createPortal(
+          <div
+            className="table-modal-backdrop"
+            role="presentation"
+            onMouseDown={() => setIsModalOpen(false)}
+          >
+            <section
+              className={[
+                'table-modal',
+                isCompactTable ? 'table-modal-compact' : '',
+                isMediumTable && !isCompactTable ? 'table-modal-medium' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              role="dialog"
+              aria-modal="true"
+              aria-label="بزرگنمایی جدول"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <header className="table-modal-header">
+                <div>
+                  <h2>بزرگنمایی جدول</h2>
+                  <p>
+                    نمایش {visibleRowsCount.toLocaleString('fa-IR')} ردیف از{' '}
+                    {totalRowsCount.toLocaleString('fa-IR')} رکورد
+                  </p>
+                </div>
 
-              <div className="table-modal-actions">
-                {downloadUrl && (
-                  <a
-                    className="table-action-button table-download-button"
-                    href={downloadUrl}
-                    download
-                    target="_blank"
-                    rel="noreferrer"
+                <div className="table-modal-actions">
+                  {downloadUrl && (
+                    <a
+                      className="table-action-button table-download-button"
+                      href={downloadUrl}
+                      download
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Download size={17} />
+                      دانلود CSV
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    className="modal-close-button"
+                    onClick={() => setIsModalOpen(false)}
+                    aria-label="بستن"
                   >
-                    <Download size={17} />
-                    دانلود CSV
-                  </a>
-                )}
+                    <X size={22} />
+                  </button>
+                </div>
+              </header>
 
-                <button
-                  type="button"
-                  className="modal-close-button"
-                  onClick={() => setIsModalOpen(false)}
-                  aria-label="بستن"
-                >
-                  <X size={22} />
-                </button>
+              <div className="table-modal-body">
+                <TableView table={table} mode="modal" />
               </div>
-            </header>
-
-            <div className="table-modal-body">
-              <TableView
-  table={table}
-  mode="modal"
-/>
-            </div>
-          </section>
-        </div>
-      )}
+            </section>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

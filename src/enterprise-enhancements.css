@@ -370,3 +370,216 @@
     animation: none !important;
   }
 }
+
+/* Login-specific premium orb drift and viewport-level table modal polish */
+.login-page .brand-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.login-page .brand-card::before,
+.login-page .brand-card::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(2px);
+  opacity: 0.72;
+  transform: translate3d(0, 0, 0);
+}
+
+.login-page .brand-card::before {
+  width: 260px;
+  height: 260px;
+  left: -72px;
+  bottom: -78px;
+  background:
+    radial-gradient(circle at 38% 34%, rgba(180, 205, 255, 0.55), transparent 58%),
+    radial-gradient(circle at 70% 72%, rgba(37, 196, 157, 0.18), transparent 62%);
+  animation: login-orb-left-drift 22s ease-in-out infinite alternate;
+}
+
+.login-page .brand-card::after {
+  width: 280px;
+  height: 280px;
+  right: -82px;
+  top: -92px;
+  background:
+    radial-gradient(circle at 48% 46%, rgba(37, 196, 157, 0.42), transparent 58%),
+    radial-gradient(circle at 76% 70%, rgba(92, 139, 255, 0.16), transparent 64%);
+  animation: login-orb-right-drift 26s ease-in-out infinite alternate;
+}
+
+.login-page .brand-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.table-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: clamp(16px, 3vw, 36px) !important;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(37, 196, 157, 0.18), transparent 30%),
+    radial-gradient(circle at 82% 18%, rgba(92, 139, 255, 0.16), transparent 34%),
+    rgba(15, 23, 42, 0.48) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+
+.table-modal {
+  width: min(1380px, calc(100vw - 48px)) !important;
+  height: min(860px, calc(100vh - 48px)) !important;
+  max-height: calc(100vh - 48px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  overflow: hidden !important;
+  border-radius: 32px !important;
+  border: 1px solid rgba(255, 255, 255, 0.78) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.94)) !important;
+  box-shadow:
+    0 44px 120px rgba(15, 23, 42, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+.table-modal-header {
+  min-height: 108px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  padding: 24px 30px !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  background:
+    radial-gradient(circle at 92% 18%, rgba(37, 196, 157, 0.12), transparent 30%),
+    rgba(255, 255, 255, 0.9) !important;
+}
+
+.table-modal-body {
+  min-height: 0 !important;
+  padding: 18px !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, rgba(248, 252, 255, 0.72), rgba(255, 255, 255, 0.92)) !important;
+}
+
+.table-modal-body .table-scroll {
+  height: 100% !important;
+  max-height: none !important;
+  overflow: auto !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.table-modal-body .data-table {
+  min-width: 920px;
+}
+
+.sql-details {
+  margin-top: 16px !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(37, 196, 157, 0.22) !important;
+  background:
+    radial-gradient(circle at 92% 16%, rgba(37, 196, 157, 0.14), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 252, 255, 0.72)) !important;
+  box-shadow:
+    0 16px 36px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.sql-details summary {
+  min-height: 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 0 18px !important;
+  color: #0f766e !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+  list-style: none !important;
+}
+
+.sql-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.sql-details summary::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-green), var(--color-blue));
+  box-shadow: 0 0 0 6px rgba(37, 196, 157, 0.1);
+}
+
+.sql-details[open] summary {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.86) !important;
+}
+
+.sql-details pre {
+  margin: 0 !important;
+  padding: 16px 18px !important;
+  max-height: 260px !important;
+  overflow: auto !important;
+  direction: ltr !important;
+  text-align: left !important;
+  white-space: pre !important;
+  color: #0f172a !important;
+  background:
+    linear-gradient(180deg, rgba(248, 252, 255, 0.96), rgba(241, 248, 255, 0.92)) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.74);
+  font-size: 12.5px;
+  line-height: 1.9;
+}
+
+.sql-details pre::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.sql-details pre::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.34);
+  background-clip: padding-box;
+}
+
+@keyframes login-orb-left-drift {
+  0% {
+    transform: translate3d(-8px, 4px, 0) scale(1);
+  }
+  45% {
+    transform: translate3d(18px, -16px, 0) scale(1.045);
+  }
+  100% {
+    transform: translate3d(34px, 10px, 0) scale(1.08);
+  }
+}
+
+@keyframes login-orb-right-drift {
+  0% {
+    transform: translate3d(8px, -8px, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-18px, 20px, 0) scale(1.035);
+  }
+  100% {
+    transform: translate3d(-36px, 8px, 0) scale(1.075);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-page .brand-card::before,
+  .login-page .brand-card::after {
+    animation: none !important;
+  }
+}
