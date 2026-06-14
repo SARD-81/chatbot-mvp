@@ -18,6 +18,7 @@ import { ChatMessageBubble } from '../components/ChatMessageBubble';
 // import { FileUpload } from '../components/FileUpload';
 import { useSystem } from '../contexts/SystemContext';
 import { sendChatMessage } from '../lib/api';
+import { buildChartFromConfig } from '../lib/chartConfigAdapter';
 import type { ChatMessage } from '../types/chat';
 import { buildChartForPromptResponse } from '../utils/chatCharts';
 import { getUserFriendlyErrorMessage, logErrorForDebug } from '../utils/errorMessages';
@@ -88,13 +89,16 @@ export function ChatPage() {
 
     try {
       const response = await sendChatMessage(userText, activeSystem);
+      const responseChart =
+        buildChartFromConfig(response) ?? buildChartForPromptResponse(userText, response);
+
       const assistantMessage: ChatMessage = {
         id: uuidv4(),
         role: 'assistant',
         content: response.answer || 'پاسخی دریافت نشد.',
         createdAt: new Date(),
         response,
-        chart: buildChartForPromptResponse(userText, response),
+        chart: responseChart,
       };
       setMessages((previousMessages) => [...previousMessages, assistantMessage]);
     } catch (error) {
