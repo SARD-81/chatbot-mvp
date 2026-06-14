@@ -128,7 +128,11 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
       if (x === null || y === null) return acc;
 
       const size = sizeCol ? (toFiniteNumber(row[sizeCol]) ?? 0) : 0;
-      const label = labelCol ? String(row[labelCol] ?? '').trim() : '';
+      const label = labelCol
+        ? String(row[labelCol] ?? '').trim()
+        : row['رده']
+          ? String(row['رده']).trim()
+          : '';
 
       acc.push({
         rank: label,
@@ -136,6 +140,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
         currentScore: y,
         supervisionScore: size,
         growth: 0,
+        rawRow: row,
       });
 
       return acc;

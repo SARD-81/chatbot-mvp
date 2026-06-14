@@ -45,6 +45,25 @@ function renderValue(val: unknown): string {
   return String(val ?? "");
 }
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderLabel(label: string): string {
+  return label.replace(/_/g, " ").trim();
+}
+
+function hasUsableRawRow(
+  rawRow: Record<string, unknown> | undefined,
+): rawRow is Record<string, unknown> {
+  return Boolean(rawRow && Object.keys(rawRow).length > 0);
+}
+
 function formatTooltip(params: TooltipComponentFormatterCallbackParams) {
   const item = getTooltipParam(params);
   const data = item.data as ScatterSeriesItem | undefined;
@@ -54,30 +73,34 @@ function formatTooltip(params: TooltipComponentFormatterCallbackParams) {
   const rank = data[4];
   const rawRow = data[5] as Record<string, unknown> | undefined;
 
-  // Build rows from rawRow if available; otherwise fall back to the 4 known fields
-  const rows: Array<{ label: string; value: string }> = rawRow
+  const rows: Array<{ label: string; value: string }> = hasUsableRawRow(rawRow)
     ? Object.entries(rawRow)
-        .filter(([key]) => key !== "رده" && key !== "rank") // title already shown in header
-        .map(([key, val]) => ({ label: key, value: renderValue(val) }))
+        .filter(([, value]) => value !== null && value !== undefined && value !== "")
+        .map(([key, value]) => ({
+          label: renderLabel(key),
+          value: renderValue(value),
+        }))
     : [
         { label: "میانگین نمره قبل", value: formatNumber(data[0], 2) },
         { label: "میانگین نمره فعلی", value: formatNumber(data[1], 2) },
-        { label: "میانگین نظارت",     value: formatNumber(data[2], 2) },
-        { label: "رشد میانی",         value: formatNumber(data[3], 2) },
+        { label: "میانگین نظارت", value: formatNumber(data[2], 2) },
+        { label: "میانگین رشد", value: formatNumber(data[3], 2) },
       ];
 
   const rowsHtml = rows
     .map(
       ({ label, value }) =>
-        `<div style="display:flex;justify-content:space-between;gap:18px;margin-top:4px">
-          <span style="color:#94a3b8">${label}</span>
-          <strong>${value}</strong>
+        `<div style="display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:7px;line-height:1.7">
+          <span style="color:#64748b;font-weight:700;white-space:nowrap">${escapeHtml(label)}</span>
+          <strong style="color:#0f172a;font-weight:900;text-align:left;direction:ltr">${escapeHtml(value)}</strong>
         </div>`,
     )
     .join("");
 
-  return `<div style="min-width:240px;direction:rtl;text-align:right">
-    <div style="font-weight:800;margin-bottom:8px;line-height:1.8;border-bottom:1px solid rgba(148,163,184,0.2);padding-bottom:6px">${rank}</div>
+  return `<div style="min-width:280px;max-width:380px;direction:rtl;text-align:right;padding:2px">
+    <div style="font-weight:900;color:#0f172a;margin-bottom:10px;line-height:1.8;border-bottom:1px solid rgba(148,163,184,0.24);padding-bottom:8px">
+      ${escapeHtml(rank)}
+    </div>
     ${rowsHtml}
   </div>`;
 }
@@ -139,9 +162,14 @@ export function EnterpriseScatterChart({
         item.supervisionScore,
         item.growth,
         item.rank,
-        item.rawRow ?? {},
+        item.rawRow ?? {
+          [xAxisName]: item.previousScore,
+          [yAxisName]: item.currentScore,
+          "میانگین نظارت": item.supervisionScore,
+          "میانگین رشد": item.growth,
+        },
       ]),
-    [data],
+    [data, xAxisName, yAxisName],
   );
 
   const growthRange = useMemo(() => {
@@ -228,7 +256,7 @@ export function EnterpriseScatterChart({
         {
           name: "رده",
           type: "scatter",
-          data: seriesData,
+          data: seriesData as unknown as number[][],
           symbolSize: scatterSymbolSize,
           emphasis: {
             focus: "self",

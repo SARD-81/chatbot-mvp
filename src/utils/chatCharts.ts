@@ -287,12 +287,25 @@ function buildRankScoreComparisonScatterChart(
       return points;
     }
 
+    const normalizedRank = normalizeChartLabel(rank);
+    const normalizedPreviousScore = Number(previousScore.toFixed(2));
+    const normalizedCurrentScore = Number(currentScore.toFixed(2));
+    const normalizedSupervisionScore = Number(supervisionScore.toFixed(2));
+    const normalizedGrowth = Number(growth.toFixed(2));
+
     points.push({
-      rank: normalizeChartLabel(rank),
-      previousScore: Number(previousScore.toFixed(2)),
-      currentScore: Number(currentScore.toFixed(2)),
-      supervisionScore: Number(supervisionScore.toFixed(2)),
-      growth: Number(growth.toFixed(2)),
+      rank: normalizedRank,
+      previousScore: normalizedPreviousScore,
+      currentScore: normalizedCurrentScore,
+      supervisionScore: normalizedSupervisionScore,
+      growth: normalizedGrowth,
+      rawRow: {
+        [RANK_COLUMN]: normalizedRank,
+        [previousScoreColumn]: normalizedPreviousScore,
+        [currentScoreColumn]: normalizedCurrentScore,
+        [supervisionScoreColumn]: normalizedSupervisionScore,
+        [growthColumn]: normalizedGrowth,
+      },
     });
 
     return points;
