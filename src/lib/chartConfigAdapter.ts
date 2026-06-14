@@ -122,7 +122,7 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
       (c) => c !== xAxis && c !== yAxis && c !== sizeCol,
     );
 
-    const data = table.rows.reduce<ScatterChartPoint[]>((acc, row) => {
+    const scatterData = table.rows.reduce<ScatterChartPoint[]>((acc, row) => {
       const x = toFiniteNumber(row[xAxis]);
       const y = toFiniteNumber(row[yAxis]);
       if (x === null || y === null) return acc;
@@ -137,21 +137,52 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
         supervisionScore: size,
         growth: 0,
       });
+
       return acc;
     }, []);
 
-    if (!data.length) return undefined;
+    if (scatterData.length) {
+      return {
+        type: 'scatter',
+        title: `${yAxis} در برابر ${xAxis}`,
+        description: '',
+        data: scatterData,
+        xAxisName: xAxis,
+        yAxisName: yAxis,
+        unit: '',
+        height: 420,
+      };
+    }
 
-    return {
-      type: 'scatter',
-      title: `${yAxis} \u062f\u0631 \u0628\u0631\u0627\u0628\u0631 ${xAxis}`,
-      description: '',
-      data,
-      xAxisName: xAxis,
-      yAxisName: yAxis,
-      unit: '',
-      height: 420,
-    };
+    const categoryValueData = table.rows.reduce<ChartPoint[]>((acc, row) => {
+      const label = row[xAxis];
+      const value = toFiniteNumber(row[yAxis]);
+
+      if (label === null || label === undefined || label === '' || value === null) {
+        return acc;
+      }
+
+      acc.push({
+        label: String(label).trim(),
+        value: Number(value.toFixed(2)),
+      });
+
+      return acc;
+    }, []);
+
+    if (categoryValueData.length) {
+      return {
+        type: 'bar',
+        title: `${yAxis} بر اساس ${xAxis}`,
+        description: '',
+        data: categoryValueData,
+        seriesName: yAxis,
+        unit: '',
+        height: 420,
+      };
+    }
+
+    return undefined;
   }
 
   return undefined;
