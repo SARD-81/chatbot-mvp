@@ -18,7 +18,7 @@ import { ChatMessageBubble } from '../components/ChatMessageBubble';
 // import { FileUpload } from '../components/FileUpload';
 import { useSystem } from '../contexts/SystemContext';
 import { sendChatMessage } from '../lib/api';
-import { buildChartFromConfig } from '../lib/chartConfigAdapter';
+import { buildChartFromConfig, hasResponseChartConfig } from '../lib/chartConfigAdapter';
 import { buildJirakavChartFromResponse } from '../lib/jirakavCharts';
 import { normalizeJirakavResponse } from '../lib/jirakavResponse';
 import type { ChatMessage } from '../types/chat';
@@ -95,11 +95,12 @@ export function ChatPage() {
         activeSystem.id === 'dataYar'
           ? normalizeJirakavResponse(rawResponse)
           : rawResponse;
-      const responseChart =
-        buildChartFromConfig(response) ??
-        (activeSystem.id === 'dataYar'
+      const hasBackendChartConfig = hasResponseChartConfig(response);
+      const responseChart = hasBackendChartConfig
+        ? buildChartFromConfig(response)
+        : activeSystem.id === 'dataYar'
           ? buildJirakavChartFromResponse(response)
-          : buildChartForPromptResponse(userText, response));
+          : buildChartForPromptResponse(userText, response);
 
       const assistantMessage: ChatMessage = {
         id: uuidv4(),
