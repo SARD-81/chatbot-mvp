@@ -251,11 +251,8 @@ export function EnterprisePieChart({
           },
           labelLine: {
             show: true,
-            showAbove: true,
             length: 16,
             length2: 12,
-            smooth: 0.12,
-            minTurnAngle: 45,
             lineStyle: {
               color: palette.mutedForeground,
               width: 2,
@@ -268,12 +265,6 @@ export function EnterprisePieChart({
             itemStyle: {
               shadowBlur: 24,
               shadowColor: "rgba(15, 23, 42, 0.22)",
-            },
-            labelLine: {
-              lineStyle: {
-                width: 2.5,
-                opacity: 1,
-              },
             },
           },
           data: displayData,
