@@ -1,39 +1,7 @@
 import type { ChartPoint, PieChartPoint } from '../components/charts/types';
 import type { ChatResponse, ChatTable } from '../types/api';
 import type { SuggestedChart } from '../types/chat';
-import { isHourLikeColumn } from './jirakavResponse';
-
-function toFiniteNumber(value: unknown): number | null {
-  if (value === null || value === undefined || value === '' || typeof value === 'boolean') {
-    return null;
-  }
-
-  if (typeof value === 'number') {
-    return Number.isFinite(value) ? value : null;
-  }
-
-  if (typeof value !== 'string') {
-    return null;
-  }
-
-  const normalizedValue = value
-    .trim()
-    .replace(/[۰-۹]/g, (digit) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)))
-    .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
-    .replace(/٫/g, '.')
-    .replace(/٬/g, ',');
-
-  let numericText = normalizedValue;
-
-  if (numericText.includes(',') && !numericText.includes('.')) {
-    numericText = numericText.replace(',', '.');
-  } else {
-    numericText = numericText.replace(/,/g, '');
-  }
-
-  const numericValue = Number(numericText);
-  return Number.isFinite(numericValue) ? numericValue : null;
-}
+import { isHourLikeColumn, toFiniteNumericValue } from './jirakavResponse';
 
 function formatColumnLabel(column: string) {
   return column.replace(/[\-_]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -66,11 +34,7 @@ function isDateLikeColumn(column: string) {
 
 function isCountLikeColumn(column: string) {
   const normalizedColumn = normalizeColumnName(column);
-  return (
-    normalizedColumn.includes('count') ||
-    normalizedColumn.includes('تعداد') ||
-    normalizedColumn.includes('تعداد کل')
-  );
+  return normalizedColumn.includes('count') || normalizedColumn.includes('تعداد');
 }
 
 function getNumericColumns(table: ChatTable) {
@@ -84,7 +48,7 @@ function getNumericColumns(table: ChatTable) {
     }
 
     const numericValuesCount = populatedValues.filter(
-      (value) => toFiniteNumber(value) !== null,
+      (value) => toFiniteNumericValue(value) !== null,
     ).length;
 
     return numericValuesCount / populatedValues.length >= 0.75;
@@ -158,7 +122,7 @@ function buildSingleRowChart(
 
   if (numericColumns.length === 1) {
     const valueColumn = numericColumns[0];
-    const value = toFiniteNumber(row[valueColumn]);
+    const value = toFiniteNumericValue(row[valueColumn]);
 
     if (value === null) {
       return undefined;
@@ -178,7 +142,7 @@ function buildSingleRowChart(
   }
 
   const data = numericColumns.reduce<ChartPoint[]>((items, column) => {
-    const value = toFiniteNumber(row[column]);
+    const value = toFiniteNumericValue(row[column]);
 
     if (value === null) {
       return items;
@@ -219,7 +183,7 @@ function buildCategoryChart(
   if (isStatusLikeColumn(labelColumn) && table.rows.length <= 10) {
     const data = table.rows.reduce<PieChartPoint[]>((items, row) => {
       const rawLabel = row[labelColumn];
-      const value = toFiniteNumber(row[valueColumn]);
+      const value = toFiniteNumericValue(row[valueColumn]);
 
       if (rawLabel === null || rawLabel === undefined || rawLabel === '' || value === null) {
         return items;
@@ -249,7 +213,7 @@ function buildCategoryChart(
 
   const data = table.rows.reduce<ChartPoint[]>((items, row) => {
     const rawLabel = row[labelColumn];
-    const value = toFiniteNumber(row[valueColumn]);
+    const value = toFiniteNumericValue(row[valueColumn]);
 
     if (rawLabel === null || rawLabel === undefined || rawLabel === '' || value === null) {
       return items;
