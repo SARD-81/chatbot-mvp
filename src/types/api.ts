@@ -20,6 +20,8 @@ export interface ChatMetadata {
   answer_mode?: string;
   download_url?: string;
   is_truncated?: boolean;
+  chart_type?: ChartConfigType;
+  /** Legacy location kept for backward compatibility with older responses. */
   chart_config?: ChartConfig;
 }
 
@@ -29,6 +31,8 @@ export interface ChatResponse {
   answer: string;
   sql?: string;
   table?: ChatTable;
+  /** Current backend contract: chart configuration is returned at response root. */
+  chart_config?: ChartConfig;
   metadata?: ChatMetadata;
 }
 

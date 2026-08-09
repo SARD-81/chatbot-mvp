@@ -15,6 +15,8 @@ import type { EnterpriseChartProps, PieChartPoint } from "./types";
 type EnterprisePieChartProps = EnterpriseChartProps & {
   data: PieChartPoint[];
   unit?: string;
+  valueLabel?: string;
+  showPercentRow?: boolean;
 };
 
 type PieFormatterParam = {
@@ -159,6 +161,8 @@ export function EnterprisePieChart({
   title = "ترکیب سهم‌ها",
   description = "نمایش سهم هر بخش از کل داده‌ها",
   unit = "",
+  valueLabel = "تعداد",
+  showPercentRow = true,
   height = 360,
   loading,
   className,
@@ -168,6 +172,7 @@ export function EnterprisePieChart({
     () => applySemanticPieColors(buildDisplayPieData(data), palette),
     [data, palette]
   );
+  const isPercentageUnit = unit.includes("٪") || unit.includes("%");
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -196,17 +201,20 @@ export function EnterprisePieChart({
         formatter: (params) => {
           const item = getPieTooltipParam(params) as PieFormatterParam;
           const name = getPieName(item);
-          const value = formatNumber(getPieValue(item), 0);
+          const value = formatNumber(getPieValue(item), isPercentageUnit ? 2 : 0);
           const percent = formatNumber(getPiePercent(item), 2);
+          const percentRow = showPercentRow
+            ? `<div style="display:flex;justify-content:space-between;gap:16px;margin-top:4px">
+                <span>درصد از کل</span><strong>${percent}٪</strong>
+              </div>`
+            : "";
 
           return `<div style="min-width:170px;direction:rtl;text-align:right;font-family:${chartFontFamily}">
             <div style="font-weight:700;margin-bottom:6px;line-height:1.8">${name}</div>
             <div style="display:flex;justify-content:space-between;gap:16px">
-              <span>تعداد</span><strong>${value}${unit ? ` ${unit}` : ""}</strong>
+              <span>${valueLabel}</span><strong>${value}${unit ? ` ${unit}` : ""}</strong>
             </div>
-            <div style="display:flex;justify-content:space-between;gap:16px;margin-top:4px">
-              <span>درصد از کل</span><strong>${percent}٪</strong>
-            </div>
+            ${percentRow}
           </div>`;
         },
       },
@@ -239,6 +247,7 @@ export function EnterprisePieChart({
             show: true,
             color: palette.foreground,
             fontSize: 11,
+            fontWeight: 600,
             fontFamily: chartFontFamily,
             formatter: (params) => {
               const item = params as PieFormatterParam;
@@ -249,10 +258,13 @@ export function EnterprisePieChart({
             },
           },
           labelLine: {
-            length: 12,
-            length2: 8,
+            show: true,
+            length: 16,
+            length2: 12,
             lineStyle: {
-              color: palette.border,
+              color: palette.mutedForeground,
+              width: 2,
+              opacity: 0.9,
             },
           },
           emphasis: {
@@ -267,7 +279,7 @@ export function EnterprisePieChart({
         },
       ],
     }),
-    [displayData, palette, unit]
+    [displayData, isPercentageUnit, palette, showPercentRow, unit, valueLabel]
   );
 
   return (
