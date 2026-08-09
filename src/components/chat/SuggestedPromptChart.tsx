@@ -44,6 +44,8 @@ export function SuggestedPromptChart({ chart }: SuggestedPromptChartProps) {
           description={chart.description}
           data={chart.data}
           unit={chart.unit}
+          valueLabel={chart.valueLabel}
+          showPercentRow={chart.showPercentRow}
           height={chart.height ?? 300}
         />
       );
