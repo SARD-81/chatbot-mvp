@@ -1,4 +1,4 @@
-import type { ChatResponse, ChatTable } from '../types/api';
+import type { ChatResponse, ChatTable, ChartConfig } from '../types/api';
 import type { SuggestedChart } from '../types/chat';
 import type { ChartPoint, PieChartPoint, ScatterChartPoint } from '../components/charts/types';
 
@@ -45,12 +45,30 @@ function toFiniteNumber(value: unknown): number | null {
   return Number.isFinite(numericValue) ? numericValue : null;
 }
 
-/**
- * Strips surrounding quotes from axis names sent by the API.
- * e.g. '"تاریخ_دوره"' => 'تاریخ_دوره'
- */
 function stripQuotes(str: string): string {
   return str.replace(/^["'“”`]+|["'“”`]+$/g, '').trim();
+}
+
+function formatColumnLabel(column: string) {
+  return column.replace(/[\-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function isPercentageColumn(column: string) {
+  const normalized = formatColumnLabel(column).toLowerCase();
+  return (
+    normalized.includes('percentage') ||
+    normalized.includes('percent') ||
+    normalized.includes('درصد') ||
+    normalized === '%'
+  );
+}
+
+function inferUnitFromColumn(column: string) {
+  const normalized = formatColumnLabel(column).toLowerCase();
+
+  if (isPercentageColumn(column)) return '٪';
+  if (normalized.includes('hour') || normalized.includes('ساعت')) return 'ساعت';
+  return '';
 }
 
 function resolveColumnName(table: ChatTable, axisName: string | null | undefined) {
@@ -60,16 +78,11 @@ function resolveColumnName(table: ChatTable, axisName: string | null | undefined
 
   const requestedColumn = stripQuotes(axisName);
 
-  // The backend contract requires exact SELECT aliases. Prefer that exact match.
   if (table.columns.includes(requestedColumn)) {
     return requestedColumn;
   }
 
-  // Be tolerant of accidental whitespace/quoting around otherwise exact aliases.
-  return (
-    table.columns.find((column) => stripQuotes(column) === requestedColumn) ??
-    null
-  );
+  return table.columns.find((column) => stripQuotes(column) === requestedColumn) ?? null;
 }
 
 function findScatterLabelColumn(
@@ -97,21 +110,41 @@ function findScatterLabelColumn(
   );
 }
 
+function getGaugeMax(value: number, valueColumn: string) {
+  if (isPercentageColumn(valueColumn)) return 100;
+  if (value <= 0) return 1;
+
+  const paddedValue = value * 1.2;
+  if (paddedValue <= 10) return Math.max(1, Math.ceil(paddedValue));
+
+  const magnitude = 10 ** Math.max(0, Math.floor(Math.log10(paddedValue)) - 1);
+  return Math.ceil(paddedValue / magnitude) * magnitude;
+}
+
+/** Current backend contract is root-level chart_config. Metadata location is legacy only. */
+export function getResponseChartConfig(response: ChatResponse): ChartConfig | undefined {
+  return response.chart_config ?? response.metadata?.chart_config;
+}
+
+export function hasResponseChartConfig(response: ChatResponse) {
+  return Boolean(getResponseChartConfig(response));
+}
+
 /**
- * Builds a SuggestedChart from metadata.chart_config.
- * API-provided chart_config always has priority over frontend inference.
+ * Builds the chart selected by the backend.
+ * When chart_config exists, its chart_type and axis bindings are authoritative.
  */
 export function buildChartFromConfig(response: ChatResponse): SuggestedChart | undefined {
-  const chartConfig = response.metadata?.chart_config;
+  const chartConfig = getResponseChartConfig(response);
   const { table } = response;
 
   if (!chartConfig) return undefined;
 
   const { chart_type: chartType } = chartConfig;
 
+  // Explicit backend decision: table means no chart.
   if (chartType === 'table') return undefined;
 
-  // Backend contract allows KPI axes to be null. Use the first numeric table value.
   if (chartType === 'kpi') {
     if (!table?.rows.length) return undefined;
 
@@ -129,12 +162,13 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
     return {
       type: 'gauge',
-      title: valueColumn,
+      title: formatColumnLabel(valueColumn),
       description: '',
       value,
       min: 0,
-      max: Math.max(1, value > 100 ? Math.ceil(value * 1.2) : 100),
-      unit: '',
+      max: getGaugeMax(value, valueColumn),
+      unit: inferUnitFromColumn(valueColumn),
+      label: formatColumnLabel(valueColumn),
     };
   }
 
@@ -146,6 +180,10 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
   if (!xAxis || !yAxis) return undefined;
 
   if (chartType === 'pie') {
+    const yIsPercentage = isPercentageColumn(yAxis);
+    const percentageColumn =
+      table.columns.find((column) => column !== yAxis && isPercentageColumn(column)) ?? null;
+
     const data = table.rows.reduce<PieChartPoint[]>((items, row) => {
       const name = row[xAxis];
       const value = toFiniteNumber(row[yAxis]);
@@ -154,9 +192,18 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
         return items;
       }
 
+      const explicitPercent = yIsPercentage
+        ? value
+        : percentageColumn
+          ? toFiniteNumber(row[percentageColumn])
+          : null;
+
       items.push({
         name: String(name).trim(),
         value: Number(value.toFixed(2)),
+        ...(explicitPercent !== null
+          ? { percent: Number(explicitPercent.toFixed(2)) }
+          : {}),
       });
 
       return items;
@@ -166,10 +213,12 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
     return {
       type: 'pie',
-      title: `توزیع ${xAxis}`,
+      title: `${formatColumnLabel(yAxis)} بر اساس ${formatColumnLabel(xAxis)}`,
       description: '',
       data,
-      unit: '',
+      unit: inferUnitFromColumn(yAxis),
+      valueLabel: formatColumnLabel(yAxis),
+      showPercentRow: !yIsPercentage,
       height: 420,
     };
   }
@@ -195,11 +244,11 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
 
     return {
       type: chartType,
-      title: `${yAxis} بر اساس ${xAxis}`,
+      title: `${formatColumnLabel(yAxis)} بر اساس ${formatColumnLabel(xAxis)}`,
       description: '',
       data,
-      seriesName: yAxis,
-      unit: '',
+      seriesName: formatColumnLabel(yAxis),
+      unit: inferUnitFromColumn(yAxis),
       height: 360,
     };
   }
@@ -228,8 +277,6 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
         previousScore: xValue,
         currentScore: yValue,
         supervisionScore: sizeValue ?? 0,
-        // Generic scatter plots do not require a third metric for bubble sizing.
-        // A stable non-zero value keeps all points clearly visible.
         growth: sizeValue ?? 1,
         rawRow: row,
       });
@@ -237,17 +284,15 @@ export function buildChartFromConfig(response: ChatResponse): SuggestedChart | u
       return items;
     }, []);
 
-    if (!data.length) {
-      return undefined;
-    }
+    if (!data.length) return undefined;
 
     return {
       type: 'scatter',
-      title: `${yAxis} در برابر ${xAxis}`,
-      description: `مقایسه دو شاخص عددی «${xAxis}» و «${yAxis}»`,
+      title: `${formatColumnLabel(yAxis)} در برابر ${formatColumnLabel(xAxis)}`,
+      description: `مقایسه دو شاخص عددی «${formatColumnLabel(xAxis)}» و «${formatColumnLabel(yAxis)}»`,
       data,
-      xAxisName: xAxis,
-      yAxisName: yAxis,
+      xAxisName: formatColumnLabel(xAxis),
+      yAxisName: formatColumnLabel(yAxis),
       unit: '',
       height: 420,
     };
