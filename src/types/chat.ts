@@ -34,6 +34,8 @@ export type SuggestedChart =
       description?: string;
       data: PieChartPoint[];
       unit?: string;
+      valueLabel?: string;
+      showPercentRow?: boolean;
       height?: number;
     }
   | {
