@@ -1,6 +1,15 @@
 import type { ChatResponse, ChatTable, ChatTableRow } from '../types/api';
 
-const NON_HOUR_UNIT_HINTS = ['second', 'seconds', 'minute', 'minutes', 'ثانیه', 'ثانيه', 'دقیقه', 'دقيقه'];
+const NON_HOUR_UNIT_HINTS = [
+  'second',
+  'seconds',
+  'minute',
+  'minutes',
+  'ثانیه',
+  'ثانيه',
+  'دقیقه',
+  'دقيقه',
+];
 
 function normalizeColumnName(columnName: string) {
   return columnName
@@ -24,7 +33,6 @@ export function isHourLikeColumn(columnName: string) {
     normalizedColumn.includes('spent time') ||
     normalizedColumn.includes('timespent') ||
     normalizedColumn.includes('زمان صرف شده') ||
-    normalizedColumn.includes('زمان صرف شده') ||
     normalizedColumn.includes('زمان صرف')
   );
 }
@@ -42,7 +50,19 @@ function normalizeLocalizedDigits(value: string) {
     .replace(/٬/g, ',');
 }
 
-function parseNumericValue(value: string) {
+export function toFiniteNumericValue(value: unknown): number | null {
+  if (value === null || value === undefined || value === '' || typeof value === 'boolean') {
+    return null;
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
   const normalizedValue = normalizeLocalizedDigits(value).trim();
 
   if (!normalizedValue) {
@@ -50,8 +70,12 @@ function parseNumericValue(value: string) {
   }
 
   let numericText = normalizedValue;
+  const looksLikeThousands = /^[-+]?\d{1,3}(,\d{3})+(?:\.\d+)?$/.test(numericText);
+  const looksLikeDecimalComma = /^[-+]?\d+,\d{1,2}$/.test(numericText);
 
-  if (numericText.includes(',') && !numericText.includes('.')) {
+  if (looksLikeThousands) {
+    numericText = numericText.replace(/,/g, '');
+  } else if (looksLikeDecimalComma && !numericText.includes('.')) {
     numericText = numericText.replace(',', '.');
   } else {
     numericText = numericText.replace(/,/g, '');
@@ -66,21 +90,13 @@ function formatHalfHour(value: number) {
 }
 
 function roundHourCellValue(value: unknown): unknown {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return roundToHalfHour(value);
-  }
-
-  if (typeof value !== 'string') {
-    return value;
-  }
-
-  const numericValue = parseNumericValue(value);
+  const numericValue = toFiniteNumericValue(value);
 
   if (numericValue !== null) {
     return roundToHalfHour(numericValue);
   }
 
-  return roundHourMentions(value);
+  return typeof value === 'string' ? roundHourMentions(value) : value;
 }
 
 function roundHourTable(table: ChatTable): ChatTable {
@@ -107,12 +123,12 @@ function roundHourTable(table: ChatTable): ChatTable {
 }
 
 function roundNumericToken(value: string) {
-  const numericValue = parseNumericValue(value);
+  const numericValue = toFiniteNumericValue(value);
   return numericValue === null ? value : formatHalfHour(roundToHalfHour(numericValue));
 }
 
 export function roundHourMentions(text: string) {
-  const numericToken = '[\\d۰-۹٠-٩]+(?:[.,٫][\\d۰-۹٠-٩]+)?';
+  const numericToken = '[-+]?[\\d۰-۹٠-٩]+(?:[.,٫][\\d۰-۹٠-٩]+)?';
   const hourUnit = '(?:ساعت|hours?)';
   const numberBeforeUnitPattern = new RegExp(`(${numericToken})(\\s*${hourUnit})`, 'gi');
   const unitBeforeNumberPattern = new RegExp(`(${hourUnit}\\s*[:：]?\\s*)(${numericToken})`, 'gi');
