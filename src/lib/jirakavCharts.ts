@@ -1,4 +1,8 @@
-import type { ChartPoint, PieChartPoint } from '../components/charts/types';
+import type {
+  ChartPoint,
+  PieChartPoint,
+  ScatterChartPoint,
+} from '../components/charts/types';
 import type { ChatResponse, ChatTable } from '../types/api';
 import type { SuggestedChart } from '../types/chat';
 import { isHourLikeColumn, toFiniteNumericValue } from './jirakavResponse';
@@ -37,6 +41,30 @@ function isCountLikeColumn(column: string) {
   return normalizedColumn.includes('count') || normalizedColumn.includes('تعداد');
 }
 
+function isPercentageLikeColumn(column: string) {
+  const normalizedColumn = normalizeColumnName(column);
+
+  return (
+    normalizedColumn.includes('percentage') ||
+    normalizedColumn.includes('percent') ||
+    normalizedColumn.includes('درصد') ||
+    normalizedColumn.includes('سهم')
+  );
+}
+
+function isIdentifierLikeColumn(column: string) {
+  const normalizedColumn = normalizeColumnName(column);
+
+  return (
+    normalizedColumn === 'id' ||
+    normalizedColumn.endsWith(' id') ||
+    normalizedColumn.includes('row number') ||
+    normalizedColumn.includes('row num') ||
+    normalizedColumn === 'rank' ||
+    normalizedColumn === 'ردیف'
+  );
+}
+
 function getNumericColumns(table: ChatTable) {
   return table.columns.filter((column) => {
     const populatedValues = table.rows
@@ -66,6 +94,7 @@ function findLabelColumn(table: ChatTable, numericColumns: string[]) {
       return (
         normalizedColumn.includes('assignee') ||
         normalizedColumn.includes('name') ||
+        normalizedColumn.includes('summary') ||
         normalizedColumn.includes('نام') ||
         normalizedColumn.includes('کاربر') ||
         normalizedColumn.includes('مسئول')
@@ -77,6 +106,7 @@ function findLabelColumn(table: ChatTable, numericColumns: string[]) {
 
 function findValueColumn(numericColumns: string[]) {
   return (
+    numericColumns.find(isPercentageLikeColumn) ??
     numericColumns.find(isCountLikeColumn) ??
     numericColumns.find(isHourLikeColumn) ??
     numericColumns[0]
@@ -86,6 +116,10 @@ function findValueColumn(numericColumns: string[]) {
 function inferUnit(column: string) {
   if (isHourLikeColumn(column)) {
     return 'ساعت';
+  }
+
+  if (isPercentageLikeColumn(column)) {
+    return 'درصد';
   }
 
   if (isCountLikeColumn(column)) {
@@ -173,17 +207,56 @@ function buildSingleRowChart(
   };
 }
 
+function getPercentageTotal(table: ChatTable, percentageColumn: string) {
+  const values = table.rows
+    .map((row) => toFiniteNumericValue(row[percentageColumn]))
+    .filter((value): value is number => value !== null);
+
+  if (!values.length) {
+    return null;
+  }
+
+  return values.reduce((sum, value) => sum + value, 0);
+}
+
+function shouldRenderAsDistribution(
+  table: ChatTable,
+  labelColumn: string,
+  numericColumns: string[],
+) {
+  if (isStatusLikeColumn(labelColumn)) {
+    return true;
+  }
+
+  const percentageColumn = numericColumns.find(isPercentageLikeColumn);
+
+  if (!percentageColumn || table.rows.length > 12) {
+    return false;
+  }
+
+  const total = getPercentageTotal(table, percentageColumn);
+
+  // A percentage/share column that approximately adds up to 100 represents
+  // composition of a whole and should stay a pie chart, not become scatter.
+  return total !== null && total >= 98 && total <= 102;
+}
+
 function buildCategoryChart(
   table: ChatTable,
   labelColumn: string,
   valueColumn: string,
+  numericColumns: string[],
 ): SuggestedChart | undefined {
   const unit = inferUnit(valueColumn);
 
-  if (isStatusLikeColumn(labelColumn) && table.rows.length <= 10) {
+  if (shouldRenderAsDistribution(table, labelColumn, numericColumns)) {
+    const percentageColumn = numericColumns.find(isPercentageLikeColumn);
     const data = table.rows.reduce<PieChartPoint[]>((items, row) => {
       const rawLabel = row[labelColumn];
       const value = toFiniteNumericValue(row[valueColumn]);
+      const percent = percentageColumn
+        ? toFiniteNumericValue(row[percentageColumn])
+        : null;
 
       if (rawLabel === null || rawLabel === undefined || rawLabel === '' || value === null) {
         return items;
@@ -192,6 +265,7 @@ function buildCategoryChart(
       items.push({
         name: String(rawLabel).trim(),
         value,
+        ...(percent !== null ? { percent } : {}),
       });
 
       return items;
@@ -244,11 +318,74 @@ function buildCategoryChart(
   };
 }
 
+function getScatterMetricColumns(numericColumns: string[]) {
+  const nonIdentifierColumns = numericColumns.filter(
+    (column) => !isIdentifierLikeColumn(column),
+  );
+
+  return nonIdentifierColumns.length >= 2 ? nonIdentifierColumns : numericColumns;
+}
+
+function buildScatterChart(
+  table: ChatTable,
+  labelColumn: string | undefined,
+  numericColumns: string[],
+): SuggestedChart | undefined {
+  const metricColumns = getScatterMetricColumns(numericColumns);
+
+  if (metricColumns.length < 2) {
+    return undefined;
+  }
+
+  const [xAxis, yAxis] = metricColumns;
+  const data = table.rows.reduce<ScatterChartPoint[]>((items, row, index) => {
+    const xValue = toFiniteNumericValue(row[xAxis]);
+    const yValue = toFiniteNumericValue(row[yAxis]);
+
+    if (xValue === null || yValue === null) {
+      return items;
+    }
+
+    const rawLabel = labelColumn ? row[labelColumn] : null;
+    const label =
+      rawLabel !== null && rawLabel !== undefined && rawLabel !== ''
+        ? String(rawLabel).trim()
+        : `نقطه ${index + 1}`;
+
+    items.push({
+      rank: label,
+      previousScore: xValue,
+      currentScore: yValue,
+      supervisionScore: 0,
+      growth: 1,
+      rawRow: row,
+    });
+
+    return items;
+  }, []);
+
+  if (!data.length) {
+    return undefined;
+  }
+
+  return {
+    type: 'scatter',
+    title: `${formatColumnLabel(yAxis)} در برابر ${formatColumnLabel(xAxis)}`,
+    description: `مقایسه دو شاخص عددی «${formatColumnLabel(xAxis)}» و «${formatColumnLabel(yAxis)}»`,
+    data,
+    xAxisName: formatColumnLabel(xAxis),
+    yAxisName: formatColumnLabel(yAxis),
+    unit: '',
+    height: 440,
+  };
+}
+
 /**
  * JiraKav fallback chart inference.
- * The API chart_config remains the first priority. This adapter is only used
- * when that config is missing or cannot be rendered, so JiraKav still uses the
- * exact same chart components as Vakav without relying on Vakav-specific prompts.
+ * The API chart_config remains the first priority. When chart_config is absent,
+ * infer chart type from the backend result shape using the same visualization
+ * contract: distribution -> pie, time-series -> line, two numeric metrics ->
+ * scatter, category/value -> bar, single aggregate -> KPI/gauge.
  */
 export function buildJirakavChartFromResponse(
   response: ChatResponse,
@@ -270,11 +407,30 @@ export function buildJirakavChartFromResponse(
   }
 
   const labelColumn = findLabelColumn(table, numericColumns);
+
+  if (labelColumn && shouldRenderAsDistribution(table, labelColumn, numericColumns)) {
+    const valueColumn = findValueColumn(numericColumns);
+    return buildCategoryChart(table, labelColumn, valueColumn, numericColumns);
+  }
+
+  if (labelColumn && isDateLikeColumn(labelColumn)) {
+    const valueColumn = findValueColumn(numericColumns);
+    return buildCategoryChart(table, labelColumn, valueColumn, numericColumns);
+  }
+
+  if (numericColumns.length >= 2) {
+    const scatterChart = buildScatterChart(table, labelColumn, numericColumns);
+
+    if (scatterChart) {
+      return scatterChart;
+    }
+  }
+
   const valueColumn = findValueColumn(numericColumns);
 
   if (!labelColumn || !valueColumn) {
     return undefined;
   }
 
-  return buildCategoryChart(table, labelColumn, valueColumn);
+  return buildCategoryChart(table, labelColumn, valueColumn, numericColumns);
 }
