@@ -37,8 +37,8 @@ export function isHourLikeColumn(columnName: string) {
   );
 }
 
-export function roundToHalfHour(value: number) {
-  const roundedValue = Math.round((value + Number.EPSILON) * 2) / 2;
+export function roundToNearestHour(value: number) {
+  const roundedValue = Math.floor(value + 0.5);
   return Object.is(roundedValue, -0) ? 0 : roundedValue;
 }
 
@@ -85,15 +85,11 @@ export function toFiniteNumericValue(value: unknown): number | null {
   return Number.isFinite(numericValue) ? numericValue : null;
 }
 
-function formatHalfHour(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
-}
-
 function roundHourCellValue(value: unknown): unknown {
   const numericValue = toFiniteNumericValue(value);
 
   if (numericValue !== null) {
-    return roundToHalfHour(numericValue);
+    return roundToNearestHour(numericValue);
   }
 
   return typeof value === 'string' ? roundHourMentions(value) : value;
@@ -124,7 +120,7 @@ function roundHourTable(table: ChatTable): ChatTable {
 
 function roundNumericToken(value: string) {
   const numericValue = toFiniteNumericValue(value);
-  return numericValue === null ? value : formatHalfHour(roundToHalfHour(numericValue));
+  return numericValue === null ? value : String(roundToNearestHour(numericValue));
 }
 
 export function roundHourMentions(text: string) {
