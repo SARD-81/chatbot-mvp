@@ -106,9 +106,9 @@ function findLabelColumn(table: ChatTable, numericColumns: string[]) {
 
 function findValueColumn(numericColumns: string[]) {
   return (
-    numericColumns.find(isPercentageLikeColumn) ??
     numericColumns.find(isCountLikeColumn) ??
     numericColumns.find(isHourLikeColumn) ??
+    numericColumns.find(isPercentageLikeColumn) ??
     numericColumns[0]
   );
 }
